@@ -1,4 +1,4 @@
-package com.digiolaba.knife_and_spoon
+package com.digiolaba.knifeandspoon
 
 import io.flutter.embedding.android.FlutterActivity
 

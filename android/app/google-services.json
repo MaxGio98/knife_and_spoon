@@ -1,0 +1,144 @@
+{
+  "project_info": {
+    "project_number": "938877840628",
+    "firebase_url": "https://knifeandspoon-3ac35.firebaseio.com",
+    "project_id": "knifeandspoon-3ac35",
+    "storage_bucket": "knifeandspoon-3ac35.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:938877840628:android:68389257530d260cdd82a1",
+        "android_client_info": {
+          "package_name": "com.digiolaba.knifeandspoon"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "938877840628-13obgo4lngh5tsl60oupkbmmc5hkbm34.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.digiolaba.knifeandspoon",
+            "certificate_hash": "c26ae5f24894e180d4b2ce6246188dd6797bfa37"
+          }
+        },
+        {
+          "client_id": "938877840628-1fc45vrufp085dhs6orm6hjivr6msde4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.digiolaba.knifeandspoon",
+            "certificate_hash": "6c7a122eed2940d0ef7a5d2a6685d8a606b0cf70"
+          }
+        },
+        {
+          "client_id": "938877840628-2p3n9rghe6o59perdockkfi5cgjtseic.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.digiolaba.knifeandspoon",
+            "certificate_hash": "0e3c4bda15cff6f05dfb8481847464d242244365"
+          }
+        },
+        {
+          "client_id": "938877840628-34k6putrp1p45mo285pd3674kij9u7gf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.digiolaba.knifeandspoon",
+            "certificate_hash": "2e1e4040da8f0136a5acce8a82f2723289d05cfd"
+          }
+        },
+        {
+          "client_id": "938877840628-cjf8e2ete1l6chgbgc043v8c4k197sg5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.digiolaba.knifeandspoon",
+            "certificate_hash": "2236f32e9548c9d3fa189e0ccb1a95210092fb99"
+          }
+        },
+        {
+          "client_id": "938877840628-e78m6ch3qg75r2tmgld7ua75mo669mhr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.digiolaba.knifeandspoon",
+            "certificate_hash": "074a9e6a83526f16b76a2601d6d5037b8451fc7b"
+          }
+        },
+        {
+          "client_id": "938877840628-kdb5k04be9ijf7fe75mjj4octcsfuhn4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.digiolaba.knifeandspoon",
+            "certificate_hash": "b988e44e4fd4e60c76cfb2605493ca1b96c82526"
+          }
+        },
+        {
+          "client_id": "938877840628-ljobi2m5akmidoufd3q8paoqbf7nqo19.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.digiolaba.knifeandspoon",
+            "certificate_hash": "30f854c2cf41ce39b0cd5039fcd8c9b051c3199e"
+          }
+        },
+        {
+          "client_id": "938877840628-lnlk956b4r0oinondq1jf6r1d2vfdrbh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.digiolaba.knifeandspoon",
+            "certificate_hash": "c5e229897aafe2c464c95f78162df0c8b0d4e0ec"
+          }
+        },
+        {
+          "client_id": "938877840628-mkh1jri8d47e2347td7v4m4o6nb74o12.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.digiolaba.knifeandspoon",
+            "certificate_hash": "d4c11ba5137b4ed264d25354ac588b8cbba3f533"
+          }
+        },
+        {
+          "client_id": "938877840628-nb6i7oa2v5maq6fvorgnopknreki47us.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.digiolaba.knifeandspoon",
+            "certificate_hash": "ece3eacd1bce76e0d3025a489b90a4a58a46bb11"
+          }
+        },
+        {
+          "client_id": "938877840628-pjn1gf1ma5fmncf2m3m3mnq27aamqdpj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.digiolaba.knifeandspoon",
+            "certificate_hash": "bef6d22f858e39f0da66eeb5140ec3b0748b9b67"
+          }
+        },
+        {
+          "client_id": "938877840628-vt2ckrh0d1s73n704ktfnd3hnbl35vn7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.digiolaba.knifeandspoon",
+            "certificate_hash": "2b75a07acb6c073b1b616f1e9f366773695a3dec"
+          }
+        },
+        {
+          "client_id": "938877840628-68ppr05or0uh0onkgmdlph64dvn6u035.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC7dHWppmp8vihz_EOMA-gw07anqBMI7pI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "938877840628-68ppr05or0uh0onkgmdlph64dvn6u035.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.digiolaba.knife_and_spoon">
+    package="com.digiolaba.knifeandspoon">
    <application
-        android:label="knife_and_spoon"
+        android:label="knifeandspoon"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
