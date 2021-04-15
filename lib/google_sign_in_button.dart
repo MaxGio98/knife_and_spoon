@@ -1,8 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:knife_and_spoon/custom_colors.dart';
-import 'package:knife_and_spoon/user_info_screen.dart';
-
+import 'package:knife_and_spoon/insert_username.dart';
 import 'authentication.dart';
 
 class GoogleSignInButton extends StatefulWidget {
@@ -38,13 +38,32 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
           _isSigningIn = false;
         });
         if (user != null) {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (context) => UserInfoScreen(
-                user: user,
-              ),
-            ),
-          );
+          FirebaseFirestore.instance
+              .collection('Utenti')
+              .get()
+              .then((QuerySnapshot querySnapshot) {
+            querySnapshot.docs.forEach((doc) {
+              //l'utente è entrato con l'account almeno una volta
+              if(doc["Mail"]==user.email)
+              {
+                if(doc["Nome"]!="")
+                {
+                  //l'utente si è registrato in maniera corretta
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) => InsertUsernameScreen(user: user)));
+                }
+                else
+                {
+                  //l'utente era già entrato con l'account ma non aveva completato la procedura di registrazione
+                }
+
+              }
+              else
+              {
+                //l'utente entra per la prima volta con l'account
+              }
+            });
+          });
+          //Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => UserInfoScreen(user: user,),),);
         }
         // TODO: Add method call to the Google Sign-In authentication
         setState(() {

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:knife_and_spoon/custom_colors.dart';
 import 'package:knife_and_spoon/sign_in_screen.dart';
@@ -10,8 +11,6 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-
-  String _versionName = 'V1.0';
   final splashDelay = 5;
 
   @override
@@ -19,6 +18,7 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
 
     _loadWidget();
+    _setPhrase();
   }
 
   _loadWidget() async {
@@ -30,10 +30,20 @@ class _SplashScreenState extends State<SplashScreen> {
     Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) => SignInScreen()));
   }
 
+  List<String> phrases=["Affetto il ciauscolo...","Scaldo l'acqua per la pasta...","A tavola!","Carbonara oggi?","Si mangia!"];
+  String _phrase="ciao";
+  void _setPhrase()
+  {
+    final _random = new Random();
+    setState(() {
+      _phrase=phrases[_random.nextInt(phrases.length)];
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: CustomColors.giggino,
+      backgroundColor: CustomColors.red,
       body: InkWell(
         child: Stack(
           fit: StackFit.expand,
@@ -59,9 +69,12 @@ class _SplashScreenState extends State<SplashScreen> {
                       )),
                 ),
                 Expanded(
+                  flex: 3,
                   child: Column(
                     children: <Widget>[
                       CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(CustomColors.white)),
+                      SizedBox(height: 35,),
+                      Text('$_phrase',style: TextStyle(fontSize: 25),),
                     ],
                   ),
                 ),

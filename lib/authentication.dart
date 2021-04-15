@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:knife_and_spoon/user_info_screen.dart';
+import 'package:knife_and_spoon/insert_username.dart';
 
 class Authentication {
   static Future<FirebaseApp> initializeFirebase({
@@ -16,9 +16,7 @@ class Authentication {
     if (user != null) {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (context) => UserInfoScreen(
-            user: user,
-          ),
+          builder: (context) => InsertUsernameScreen(user: user),
         ),
       );
     }
