@@ -1,12 +1,6 @@
 import 'package:flutter/material.dart';
 
-
-
-
-
-class LoginRoute extends StatelessWidget
-{
-
+class LoginRoute extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,8 +9,7 @@ class LoginRoute extends StatelessWidget
       ),
       body: Center(
         child: ElevatedButton(
-          onPressed: () {
-          },
+          onPressed: () {},
           child: Text('Sign in with Google'),
         ),
       ),

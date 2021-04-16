@@ -1,7 +1,5 @@
-
 import 'package:flutter/material.dart';
 import 'package:knife_and_spoon/splashscreen.dart';
-
 
 void main() {
   runApp(StartingPoint());
@@ -20,6 +18,3 @@ class StartingPoint extends StatelessWidget {
     );
   }
 }
-
-
-

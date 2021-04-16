@@ -1,4 +1,3 @@
-
 import 'dart:collection';
 import 'dart:io';
 
@@ -9,90 +8,113 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:knife_and_spoon/custom_colors.dart';
 
+import 'home.dart';
 
-Future<void> checkUsername(String newUsername, BuildContext context,User actualUser,String imageData) async {
-
-
-  if(newUsername.length<5)
-    {
-      return showDialog<void>(
-        context: context,
-        barrierDismissible: false, // user must tap button!
-        builder: (BuildContext context) {
-          return AlertDialog(
-            backgroundColor: CustomColors.white,
-            title: Text('Attenzione',style: TextStyle(color: Colors.black),),
-            content: SingleChildScrollView(
-              child: ListBody(
-                children: <Widget>[
-                  Text('Per favore utilizza uno username con almeno 5 caratteri',style: TextStyle(color: Colors.black),),
-                ],
-              ),
+Future<void> checkUsername(String newUsername, BuildContext context,
+    User actualUser, String imageData) async {
+  if (newUsername.length < 5) {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: CustomColors.white,
+          title: Text(
+            'Attenzione',
+            style: TextStyle(color: Colors.black),
+          ),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(
+                  'Per favore utilizza uno username con almeno 5 caratteri',
+                  style: TextStyle(color: Colors.black),
+                ),
+              ],
             ),
-            actions: <Widget>[
-              TextButton(
-                child: Text('OK',style: TextStyle(color: CustomColors.red),),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text(
+                'OK',
+                style: TextStyle(color: CustomColors.red),
               ),
-            ],
-          );
-        },
-      );
-    }
-  else
-    {
-      CollectionReference usersCollection=FirebaseFirestore.instance.collection("Utenti");
-      usersCollection.where("Nome",isEqualTo: newUsername).get().then((QuerySnapshot querySnapshot) async {
-        if(querySnapshot.docs.isNotEmpty)
-          {
-            return showDialog<void>(
-              context: context,
-              barrierDismissible: false, // user must tap button!
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  backgroundColor: CustomColors.white,
-                  title: Text('Attenzione',style: TextStyle(color: Colors.black),),
-                  content: SingleChildScrollView(
-                    child: ListBody(
-                      children: <Widget>[
-                        Text('Il tuo username è già in uso.',style: TextStyle(color: Colors.black),),
-                        Text('Per favore usane un altro.',style: TextStyle(color: Colors.black),),
-                      ],
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  } else {
+    CollectionReference usersCollection =
+        FirebaseFirestore.instance.collection("Utenti");
+    usersCollection
+        .where("Nome", isEqualTo: newUsername)
+        .get()
+        .then((QuerySnapshot querySnapshot) async {
+      if (querySnapshot.docs.isNotEmpty) {
+        return showDialog<void>(
+          context: context,
+          barrierDismissible: false, // user must tap button!
+          builder: (BuildContext context) {
+            return AlertDialog(
+              backgroundColor: CustomColors.white,
+              title: Text(
+                'Attenzione',
+                style: TextStyle(color: Colors.black),
+              ),
+              content: SingleChildScrollView(
+                child: ListBody(
+                  children: <Widget>[
+                    Text(
+                      'Questo username è già in uso.',
+                      style: TextStyle(color: Colors.black),
                     ),
-                  ),
-                  actions: <Widget>[
-                    TextButton(
-                      child: Text('OK',style: TextStyle(color: CustomColors.red),),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
+                    Text(
+                      'Per favore usane un altro.',
+                      style: TextStyle(color: Colors.black),
                     ),
                   ],
-                );
-              },
+                ),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: Text(
+                    'OK',
+                    style: TextStyle(color: CustomColors.red),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
             );
-          }
-        else
-          {
-              List<String> preferiti=[];
-              Map<String,Object> user=new HashMap();
-              user["Mail"]=actualUser.email!;
-              user["Nome"]=newUsername;
-              user["isAdmin"]=false;
-              user["Preferiti"]=preferiti;
-              File image=File(imageData);
-              FirebaseStorage storage = FirebaseStorage.instance;
-              Reference storageRef=storage.ref();
-              Reference imageRef=storageRef.child(newUsername+".jpg");
-              imageRef.putFile(image);
-              String picURL=await imageRef.getDownloadURL();
-              user["Immagine"]=picURL;
-              FirebaseFirestore.instance.collection("Utenti").add(user);
+          },
+        );
+      } else {
+        List<String> preferiti = [];
+        Map<String, Object> user = new HashMap();
+        user["Mail"] = actualUser.email!;
+        user["Nome"] = newUsername;
+        user["isAdmin"] = false;
+        user["Preferiti"] = preferiti;
+        File image = File(imageData);
+        FirebaseStorage storage = FirebaseStorage.instance;
+        Reference storageRef = storage.ref();
+        Reference imageRef = storageRef.child(newUsername + ".jpg");
+        imageRef.putFile(image);
+        String picURL = await imageRef.getDownloadURL();
+        user["Immagine"] = picURL;
+        FirebaseFirestore.instance.collection("Utenti").add(user).whenComplete(
+            () => Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (BuildContext context) => HomeScreen())));
+        //Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) => HomeScreen()));
 
-          }
-      });
-    }
-
+      }
+    });
+  }
 }

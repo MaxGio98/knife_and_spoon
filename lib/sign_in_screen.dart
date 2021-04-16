@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'authentication.dart';
-import 'google_sign_in_button.dart';
 import 'custom_colors.dart';
+import 'google_sign_in_button.dart';
 
 class SignInScreen extends StatefulWidget {
   @override
@@ -34,7 +34,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       flex: 1,
                       child: Image.asset(
                         'assets/app_logo.png',
-                        height: MediaQuery.of(context).size.width*(0.75),
+                        height: MediaQuery.of(context).size.width * (0.75),
                       ),
                     ),
                   ],

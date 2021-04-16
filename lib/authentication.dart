@@ -1,9 +1,12 @@
-import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:knife_and_spoon/insert_username.dart';
+import 'package:knife_and_spoon/username_insert.dart';
+
+import 'home.dart';
 
 class Authentication {
   static Future<FirebaseApp> initializeFirebase({
@@ -14,15 +17,41 @@ class Authentication {
     User? user = FirebaseAuth.instance.currentUser;
 
     if (user != null) {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => InsertUsernameScreen(user: user),
-        ),
-      );
+      CollectionReference usersCollection =
+          FirebaseFirestore.instance.collection("Utenti");
+      usersCollection
+          .where("Mail", isEqualTo: user.email)
+          .get()
+          .then((QuerySnapshot querySnapshot) {
+        //esiste un documento con quella mail, quindi l'utente è entrato almeno una volta
+        if (querySnapshot.docs.isNotEmpty) {
+          if (querySnapshot.docs[0].get("Nome") != null) {
+            //l'utente si è registrato in maniera corretta
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (BuildContext context) => HomeScreen()));
+          } else {
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (BuildContext context) =>
+                        InsertUsernameScreen(user: user)));
+          }
+        } else {
+          //l'utente entra per la prima volta nell'app
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (BuildContext context) =>
+                      InsertUsernameScreen(user: user)));
+        }
+      });
     }
 
     return firebaseApp;
   }
+
   static SnackBar customSnackBar({required String content}) {
     return SnackBar(
       backgroundColor: Colors.black,
@@ -40,11 +69,11 @@ class Authentication {
     final GoogleSignIn googleSignIn = GoogleSignIn();
 
     final GoogleSignInAccount? googleSignInAccount =
-    await googleSignIn.signIn();
+        await googleSignIn.signIn();
 
     if (googleSignInAccount != null) {
       final GoogleSignInAuthentication googleSignInAuthentication =
-      await googleSignInAccount.authentication;
+          await googleSignInAccount.authentication;
 
       final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleSignInAuthentication.accessToken,
@@ -53,22 +82,20 @@ class Authentication {
 
       try {
         final UserCredential userCredential =
-        await auth.signInWithCredential(credential);
+            await auth.signInWithCredential(credential);
 
         user = userCredential.user;
       } on FirebaseAuthException catch (e) {
         if (e.code == 'account-exists-with-different-credential') {
           ScaffoldMessenger.of(context).showSnackBar(
             Authentication.customSnackBar(
-              content:
-              'The account already exists with a different credential',
+              content: 'The account already exists with a different credential',
             ),
           );
         } else if (e.code == 'invalid-credential') {
           ScaffoldMessenger.of(context).showSnackBar(
             Authentication.customSnackBar(
-              content:
-              'Error occurred while accessing credentials. Try again.',
+              content: 'Error occurred while accessing credentials. Try again.',
             ),
           );
         }
@@ -83,6 +110,7 @@ class Authentication {
       return user;
     }
   }
+
   static Future<void> signOut({required BuildContext context}) async {
     final GoogleSignIn googleSignIn = GoogleSignIn();
 
