@@ -84,7 +84,7 @@ class _SplashScreenState extends State<SplashScreen> {
                       ),
                       Text(
                         '$_phrase',
-                        style: TextStyle(fontSize: 25),
+                        style: TextStyle(fontSize: MediaQuery.of(context).size.width*(.06),color: CustomColors.white),
                       ),
                     ],
                   ),

@@ -58,8 +58,7 @@ class _InsertUsernameScreenState extends State<InsertUsernameScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (dataLoaded) {
-      return Scaffold(
+          return Scaffold(
         backgroundColor: CustomColors.red,
         body: InkWell(
           child: Stack(
@@ -74,16 +73,7 @@ class _InsertUsernameScreenState extends State<InsertUsernameScreen> {
                         child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        ClipOval(
-                          child: Material(
-                            color: CustomColors.red.withOpacity(0.3),
-                            child: Image.file(
-                              File(imageData),
-                              height: 250,
-                              width: 250,
-                            ),
-                          ),
-                        )
+                        buildImage(context)
                       ],
                     )),
                   ),
@@ -108,11 +98,23 @@ class _InsertUsernameScreenState extends State<InsertUsernameScreen> {
                             TextField(
                               cursorColor: CustomColors.gray,
                               decoration: InputDecoration(
-                                border: OutlineInputBorder(),
+                                counterStyle: TextStyle(color: CustomColors.gray),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: CustomColors.gray),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: Colors.white),
+                                  ),
                                 hintText: "Inserisci qui il tuo username",
+                                hintStyle: TextStyle(
+                                  color: CustomColors.gray
+                                )
                               ),
                               controller: usernameController,
                               maxLength: 20,
+                              style: TextStyle(color: CustomColors.white),
                             ),
                             SizedBox(
                               height: 16,
@@ -154,24 +156,29 @@ class _InsertUsernameScreenState extends State<InsertUsernameScreen> {
           ),
         ),
       );
-    } else {
-      return Scaffold(
-        backgroundColor: CustomColors.white,
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                        CustomColors.red))
-              ],
-            )
-          ],
-        ),
-      );
+    
 
     }
+  Widget buildImage(BuildContext context)
+  {
+    if(dataLoaded)
+    {
+      return  CircleAvatar(
+          radius: MediaQuery.of(context).size.width*(.2),
+          backgroundImage: FileImage(File(imageData),)
+      );
+    }
+    else
+    {
+      return Container(
+        child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(
+                CustomColors.white)),
+      );
+    }
+
   }
-}
+  }
+  
+  
+

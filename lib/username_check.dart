@@ -105,13 +105,24 @@ Future<void> checkUsername(String newUsername, BuildContext context,
         Reference storageRef = storage.ref();
         Reference imageRef = storageRef.child(newUsername + ".jpg");
         imageRef.putFile(image);
-        String picURL = await imageRef.getDownloadURL();
-        user["Immagine"] = picURL;
-        FirebaseFirestore.instance.collection("Utenti").add(user).whenComplete(
-            () => Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                    builder: (BuildContext context) => HomeScreen())));
+        await imageRef.getDownloadURL().then((url)
+        {
+          user["Immagine"] = url;
+          FirebaseFirestore.instance.collection("Utenti").add(user).then((value)
+          {
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) => HomeScreen()));
+          }).catchError((error)
+            {
+              //da inserire alert errore
+
+            }
+          );
+        }
+        ).catchError((error)
+        {
+          //da inserire alert errore
+        });
+
         //Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) => HomeScreen()));
 
       }

@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:knife_and_spoon/custom_colors.dart';
+import 'package:knife_and_spoon/ricetta.dart';
 import 'package:knife_and_spoon/utente.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -12,12 +13,16 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   FirebaseAuth auth = FirebaseAuth.instance;
-  late Utente actualUser = new Utente("", "", "", [], false);
-  bool userLoaded = false;
+  late Utente _actualUser = new Utente("", "", "", [], false);
+  List<Ricetta>_ricette=[];
+  bool _userLoaded = false;
+  bool _tenRicipesLoaded=false;
+
 
   @override
   void initState() {
     loadActualUser();
+    loadTenRecepies();
     super.initState();
   }
 
@@ -29,65 +34,109 @@ class _HomeScreenState extends State<HomeScreen> {
           .where("Mail", isEqualTo: auth.currentUser!.email)
           .get()
           .then((QuerySnapshot querySnapshot) async {
-        //load user data
+            //load user data
         setState(() {
-          userLoaded = true;
-          actualUser = new Utente(
+          _userLoaded = true;
+          _actualUser = new Utente(
               querySnapshot.docs[0].get("Immagine"),
               querySnapshot.docs[0].get("Mail"),
               querySnapshot.docs[0].get("Nome"),
-              querySnapshot.docs[0].get("Preferiti"),
+              List<String>.from(querySnapshot.docs[0].get("Preferiti")),
               querySnapshot.docs[0].get("isAdmin"));
         });
       });
     }
   }
 
+  void loadTenRecepies()
+  {
+    CollectionReference recipesCollection =
+    FirebaseFirestore.instance.collection("Ricette");
+    recipesCollection.limit(10).get()
+        .then((QuerySnapshot querySnapshot) async {
+      //load user data
+      setState(() {
+        for(int i=0;i<querySnapshot.docs.length;i++)
+          {
+            /*Ricetta ricetta=new Ricetta(querySnapshot.docs[i].id,
+                querySnapshot.docs[i].get("Autore"),
+                querySnapshot.docs[i].get("Thumbnail"),
+                querySnapshot.docs[i].get("Titolo"),
+                querySnapshot.docs[i].get("NumeroPersone"),
+                querySnapshot.docs[i].get("TempoPreparazione"),
+                List<Map<String,Object>>.from(Map<String,Object>.from(querySnapshot.docs[i].get("Ingredienti"))),
+                List<String>.from(querySnapshot.docs[i].get("Passaggi")),
+                querySnapshot.docs[i].get("isApproved"),
+                querySnapshot.docs[i].get("Timestamp"),
+                querySnapshot.docs[i].get("Categoria"));
+            _ricette.add(ricetta);*/
+          }
+
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (userLoaded) {
-      return Scaffold(
+    var height=MediaQuery.of(context).size.height;
+    var width=MediaQuery.of(context).size.width;
+    return Scaffold(
         backgroundColor: CustomColors.white,
         body: ListView.builder(
             itemCount: 1,
             itemBuilder: (context, index) {
               return Container(
-                  color: CustomColors.white,
-                  height: MediaQuery.of(context).size.height,
+                  height: height,
                   child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
-                        Expanded(
-                          flex: 1,
-                          child: Container(
-                            height: MediaQuery.of(context).size.height,
+                        Padding(padding: EdgeInsets.only(top: height*(.01))),
+                           Container(
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: <Widget>[
-                                Container(
-                                  width: MediaQuery.of(context).size.width *
-                                      (0.1),
-                                  height: MediaQuery.of(context).size.height *
-                                      (0.1),
-                                  decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      image: DecorationImage(
-                                        image:
-                                        NetworkImage(actualUser.Immagine),
-                                      )),
+                                Padding(padding: EdgeInsets.only(
+                                    left: width*(.005),right: width*(.005),)
+                                ),
+                                buildImage(context),
+                                SizedBox(width:width*(0.01),),
+                                Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: <Widget>[
+                                      Text("Ciao "+_actualUser.Nome+"!\nBenvenuto su Knife&Spoon.",
+                                        style: TextStyle(fontSize: width*(.055)),
+                                      ),
+                                    ]
                                 )
                               ],
                             ),
                           ),
-                        ),
-                      ])
+                      ]
+                  )
               );
             })
       );
-    } else {
-      return Scaffold(
-        backgroundColor: CustomColors.white,
-      );
-    }
+
+  }
+
+  Widget buildImage(BuildContext context)
+  {
+    if(_userLoaded)
+      {
+        return  CircleAvatar(
+            radius: MediaQuery.of(context).size.width*(.1),
+
+            backgroundImage: NetworkImage(_actualUser.Immagine),
+            backgroundColor: CustomColors.white,
+        );
+      }
+    else
+      {
+        return Container(
+          child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(
+                  CustomColors.red)),
+        );
+      }
+
   }
 }

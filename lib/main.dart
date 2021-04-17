@@ -12,7 +12,7 @@ class StartingPoint extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.indigo,
-        brightness: Brightness.dark,
+        brightness: Brightness.light,
       ),
       home: SplashScreen(),
     );
