@@ -1,11 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:knife_and_spoon/custom_colors.dart';
-import 'package:knife_and_spoon/home.dart';
-import 'package:knife_and_spoon/username_insert.dart';
-
-import 'authentication.dart';
+import 'package:knife_and_spoon/Assets/custom_colors.dart';
+import 'package:knife_and_spoon/Pages/home.dart';
+import 'package:knife_and_spoon/Pages/username_insert.dart';
+import 'package:knife_and_spoon/Utils/authentication.dart';
 
 class GoogleSignInButton extends StatefulWidget {
   @override
@@ -36,7 +35,7 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
                 setState(() {
                   _isSigningIn = true;
                 });
-                User? user =
+                User user =
                     await Authentication.signInWithGoogle(context: context);
                 setState(() {
                   _isSigningIn = false;

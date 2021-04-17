@@ -6,9 +6,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:knife_and_spoon/custom_colors.dart';
+import 'package:knife_and_spoon/Assets/custom_colors.dart';
+import 'package:knife_and_spoon/Pages/home.dart';
 
-import 'home.dart';
 
 Future<void> checkUsername(String newUsername, BuildContext context,
     User actualUser, String imageData) async {
@@ -96,7 +96,7 @@ Future<void> checkUsername(String newUsername, BuildContext context,
       } else {
         List<String> preferiti = [];
         Map<String, Object> user = new HashMap();
-        user["Mail"] = actualUser.email!;
+        user["Mail"] = actualUser.email;
         user["Nome"] = newUsername;
         user["isAdmin"] = false;
         user["Preferiti"] = preferiti;
@@ -105,21 +105,20 @@ Future<void> checkUsername(String newUsername, BuildContext context,
         Reference storageRef = storage.ref();
         Reference imageRef = storageRef.child(newUsername + ".jpg");
         imageRef.putFile(image);
-        await imageRef.getDownloadURL().then((url)
-        {
+        await imageRef.getDownloadURL().then((url) {
           user["Immagine"] = url;
-          FirebaseFirestore.instance.collection("Utenti").add(user).then((value)
-          {
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) => HomeScreen()));
-          }).catchError((error)
-            {
-              //da inserire alert errore
-
-            }
-          );
-        }
-        ).catchError((error)
-        {
+          FirebaseFirestore.instance
+              .collection("Utenti")
+              .add(user)
+              .then((value) {
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (BuildContext context) => HomeScreen()));
+          }).catchError((error) {
+            //da inserire alert errore
+          });
+        }).catchError((error) {
           //da inserire alert errore
         });
 

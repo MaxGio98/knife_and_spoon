@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-
-import 'authentication.dart';
-import 'custom_colors.dart';
-import 'google_sign_in_button.dart';
+import 'package:knife_and_spoon/Assets/custom_colors.dart';
+import 'package:knife_and_spoon/Widgets/google_sign_in_button.dart';
 
 class SignInScreen extends StatefulWidget {
   @override
@@ -40,21 +38,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   ],
                 ),
               ),
-              FutureBuilder(
-                future: Authentication.initializeFirebase(context: context),
-                builder: (context, snapshot) {
-                  if (snapshot.hasError) {
-                    return Text('Error initializing Firebase');
-                  } else if (snapshot.connectionState == ConnectionState.done) {
-                    return GoogleSignInButton();
-                  }
-                  return CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      CustomColors.white,
-                    ),
-                  );
-                },
-              ),
+              GoogleSignInButton(),
             ],
           ),
         ),

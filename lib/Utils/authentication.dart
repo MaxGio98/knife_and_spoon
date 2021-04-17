@@ -4,18 +4,17 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:knife_and_spoon/username_insert.dart';
+import 'package:knife_and_spoon/Pages/sign_in_screen.dart';
+import 'package:knife_and_spoon/Pages/username_insert.dart';
 
-import 'home.dart';
+import '../Pages/home.dart';
 
 class Authentication {
-  static Future<FirebaseApp> initializeFirebase({
-    required BuildContext context,
+  static Future initializeFirebase({
+    @required BuildContext context,
   }) async {
-    FirebaseApp firebaseApp = await Firebase.initializeApp();
-
-    User? user = FirebaseAuth.instance.currentUser;
-
+    await Firebase.initializeApp();
+    User user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       CollectionReference usersCollection =
           FirebaseFirestore.instance.collection("Utenti");
@@ -47,12 +46,15 @@ class Authentication {
                       InsertUsernameScreen(user: user)));
         }
       });
+    } else {
+      Navigator.pushReplacement(context,
+          MaterialPageRoute(builder: (BuildContext context) => SignInScreen()));
     }
 
-    return firebaseApp;
+    return user;
   }
 
-  static SnackBar customSnackBar({required String content}) {
+  static SnackBar customSnackBar({@required String content}) {
     return SnackBar(
       backgroundColor: Colors.black,
       content: Text(
@@ -62,14 +64,13 @@ class Authentication {
     );
   }
 
-  static Future<User?> signInWithGoogle({required BuildContext context}) async {
+  static Future<User> signInWithGoogle({@required BuildContext context}) async {
     FirebaseAuth auth = FirebaseAuth.instance;
-    User? user;
+    User user;
 
     final GoogleSignIn googleSignIn = GoogleSignIn();
 
-    final GoogleSignInAccount? googleSignInAccount =
-        await googleSignIn.signIn();
+    final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
 
     if (googleSignInAccount != null) {
       final GoogleSignInAuthentication googleSignInAuthentication =
@@ -111,7 +112,7 @@ class Authentication {
     }
   }
 
-  static Future<void> signOut({required BuildContext context}) async {
+  static Future<void> signOut({@required BuildContext context}) async {
     final GoogleSignIn googleSignIn = GoogleSignIn();
 
     try {
