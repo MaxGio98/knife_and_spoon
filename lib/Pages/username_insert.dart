@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -52,6 +53,7 @@ class _InsertUsernameScreenState extends State<InsertUsernameScreen> {
 
   String imageData;
   bool dataLoaded = false;
+  bool check=false;
 
   final usernameController = TextEditingController();
 
@@ -59,94 +61,108 @@ class _InsertUsernameScreenState extends State<InsertUsernameScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: CustomColors.red,
-      body: InkWell(
-        child: Stack(
-          fit: StackFit.expand,
-          children: <Widget>[
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
+      body: SingleChildScrollView(
+        child: ConstrainedBox(
+          constraints: BoxConstraints.tightFor(height: MediaQueryData.fromWindow(window).size.height),
+          child: InkWell(
+            child: Stack(
+              fit: StackFit.expand,
               children: <Widget>[
-                Expanded(
-                  flex: 7,
-                  child: Container(
-                      child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[buildImage(context)],
-                  )),
-                ),
-                Expanded(
-                    flex: 6,
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                        left: 16.0,
-                        right: 16.0,
-                        bottom: 20.0,
-                      ),
-                      child: Column(
-                        children: <Widget>[
-                          Text(
-                            'Ciao ' + '${_user.displayName}!',
-                            style: TextStyle(
-                              color: CustomColors.white,
-                              fontSize: 26,
-                            ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Expanded(
+                      flex: 7,
+                      child: Container(
+                          child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[buildImage(context)],
+                      )),
+                    ),
+                    Expanded(
+                        flex: 6,
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                            left: 16.0,
+                            right: 16.0,
+                            bottom: 20.0,
                           ),
-                          SizedBox(height: 16.0),
-                          TextField(
-                            cursorColor: CustomColors.gray,
-                            decoration: InputDecoration(
-                                counterStyle:
-                                    TextStyle(color: CustomColors.gray),
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide:
-                                      BorderSide(color: CustomColors.gray),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.white),
-                                ),
-                                hintText: "Inserisci qui il tuo username",
-                                hintStyle: TextStyle(color: CustomColors.gray)),
-                            controller: usernameController,
-                            maxLength: 20,
-                            style: TextStyle(color: CustomColors.white),
-                          ),
-                          SizedBox(
-                            height: 16,
-                          ),
-                          ElevatedButton(
-                            style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all(
-                                CustomColors.red,
-                              ),
-                              shape: MaterialStateProperty.all(
-                                RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                              ),
-                            ),
-                            onPressed: () {
-                              checkUsername(usernameController.text, context,
-                                  _user, imageData);
-                            },
-                            child: Padding(
-                              padding: EdgeInsets.only(top: 8.0, bottom: 8.0),
-                              child: Text(
-                                'Registrami!',
+                          child: Column(
+                            children: <Widget>[
+                              Text(
+                                'Ciao ' + '${_user.displayName}!',
                                 style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                  letterSpacing: 2,
+                                  color: CustomColors.white,
+                                  fontSize: 26,
                                 ),
                               ),
-                            ),
+                              SizedBox(height: 16.0),
+                              TextField(
+                                cursorColor: CustomColors.white,
+                                decoration: InputDecoration(
+                                    counterStyle:
+                                        TextStyle(color: CustomColors.gray),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide:
+                                          BorderSide(color: CustomColors.gray),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(color: Colors.white),
+                                    ),
+                                    hintText: "Inserisci qui il tuo username",
+                                    hintStyle: TextStyle(color: CustomColors.gray)),
+                                controller: usernameController,
+                                maxLength: 20,
+                                style: TextStyle(color: CustomColors.white),
+                              ),
+                              SizedBox(
+                                height: 16,
+                              ),
+                              AnimatedSwitcher(
+                                duration: Duration(milliseconds: 250),
+                                child:check?CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.white),): ElevatedButton(
+                                  style: ButtonStyle(
+                                    backgroundColor: MaterialStateProperty.all(
+                                      CustomColors.red,
+                                    ),
+                                    shape: MaterialStateProperty.all(
+                                      RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                    ),
+                                  ),
+                                  onPressed: () async {
+                                    setState(() {
+                                      check=true;
+                                    });
+                                    await checkUsername(usernameController.text, context,
+                                        _user, imageData);
+                                    setState(() {
+                                      check=false;
+                                    });
+                                  },
+                                  child: Padding(
+                                    padding: EdgeInsets.only(top: 8.0, bottom: 8.0),
+                                    child: Text(
+                                      'Registrami!',
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                        letterSpacing: 2,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                    )),
+                        )),
+                  ],
+                ),
               ],
             ),
-          ],
+          ),
         ),
       ),
     );

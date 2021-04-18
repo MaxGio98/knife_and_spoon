@@ -1,6 +1,4 @@
-import 'dart:async';
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:knife_and_spoon/Assets/custom_colors.dart';
 import 'package:knife_and_spoon/Pages/sign_in_screen.dart';
@@ -17,15 +15,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    //_loadWidget();
     _setPhrase();
-  }
-
-  void _checkUser() {}
-
-  _loadWidget() async {
-    var _duration = Duration(seconds: splashDelay);
-    return Timer(_duration, navigationPage);
   }
 
   void navigationPage() {
