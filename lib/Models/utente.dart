@@ -1,9 +1,10 @@
 class Utente {
-  String Immagine;
-  String Mail;
-  String Nome;
-  List<String> Preferiti;
+  String id;
+  String immagine;
+  String mail;
+  String nome;
+  List<String> preferiti;
   bool isAdmin;
 
-  Utente(this.Immagine, this.Mail, this.Nome, this.Preferiti, this.isAdmin);
+  Utente(this.id,this.immagine, this.mail, this.nome, this.preferiti, this.isAdmin);
 }
