@@ -20,6 +20,8 @@ class StartingPoint extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.indigo,
         brightness: Brightness.light,
+        accentColor: CustomColors.red,
+        accentColorBrightness: Brightness.light,
       ),
       home: SplashScreen(),
     );

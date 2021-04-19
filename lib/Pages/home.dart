@@ -154,29 +154,33 @@ class _HomeScreenState extends State<HomeScreen>
             shape: CircleBorder(),
             children: [
               SpeedDialChild(
-                child: Icon(Icons.edit),
+                child: Icon(Icons.edit,color: CustomColors.white,),
                 backgroundColor: CustomColors.red,
                 label: 'Aggiungi una ricetta',
                 labelStyle: TextStyle(fontSize: 18.0,color: CustomColors.white),
+                labelBackgroundColor: CustomColors.red,
                 onTap: () {},
               ),
               SpeedDialChild(
-                child: Icon(Icons.search),
+                child: Icon(Icons.search,color: CustomColors.white,),
                 backgroundColor: CustomColors.red,
                 label: 'Ricerca',
                 labelStyle: TextStyle(fontSize: 18.0,color: CustomColors.white),
+                labelBackgroundColor: CustomColors.red,
                 onTap: () {},
               ),
               SpeedDialChild(
-                child: Icon(Icons.favorite),
+                child: Icon(Icons.favorite,color: CustomColors.white,),
                 backgroundColor: CustomColors.red,
                 label: 'Preferiti',
                 labelStyle: TextStyle(fontSize: 18.0,color: CustomColors.white),
+                labelBackgroundColor: CustomColors.red,
                 onTap: () {},
               ),
               SpeedDialChild(
-                child: Icon(Icons.settings),
+                child: Icon(Icons.settings,color: CustomColors.white,),
                 backgroundColor: CustomColors.red,
+                labelBackgroundColor: CustomColors.red,
                 label: 'Impostazioni',
                 labelStyle: TextStyle(fontSize: 18.0,color: CustomColors.white),
                 onTap: () {},
@@ -204,16 +208,12 @@ class _HomeScreenState extends State<HomeScreen>
                           SizedBox(
                             width: width * (0.01),
                           ),
-                          Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                Text(
-                                  "Ciao " +
-                                      _actualUser.nome +
-                                      "!\nBenvenuto su Knife&Spoon.",
-                                  style: TextStyle(fontSize: width * (.055)),
-                                ),
-                              ])
+                          Text(
+                            "Ciao " +
+                                _actualUser.nome +
+                                "!\nBenvenuto su Knife&Spoon.",
+                            style: TextStyle(fontSize: width * (.055)),
+                          )
                         ],
                       ),
                     ),
