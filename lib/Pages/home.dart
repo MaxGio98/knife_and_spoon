@@ -11,6 +11,7 @@ import 'package:knife_and_spoon/Models/ricetta.dart';
 import 'package:knife_and_spoon/Models/utente.dart';
 import 'package:knife_and_spoon/Pages/ricetta_show.dart';
 import 'package:knife_and_spoon/Pages/search_ricetta.dart';
+import 'package:knife_and_spoon/Widgets/ricetta_button.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -20,10 +21,11 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
   FirebaseAuth auth = FirebaseAuth.instance;
-  Utente _actualUser = new Utente("","", "", "", [], false);
+  Utente _actualUser = new Utente("", "", "", "", [], false);
   List<Ricetta> _tenRicette = [];
   List<Ricetta> _lastTenRicette = [];
   bool _userLoaded = false;
+  bool _lastTenRicetteLoaded = false;
   AnimationController rotationController;
 
   _HomeScreenState() {
@@ -66,7 +68,11 @@ class _HomeScreenState extends State<HomeScreen>
     _tenRicette.clear();
     CollectionReference recipesCollection =
         FirebaseFirestore.instance.collection("Ricette");
-    recipesCollection.limit(10).get().then((QuerySnapshot querySnapshot) async {
+    recipesCollection
+        .limit(10)
+        .where("isApproved", isEqualTo: true)
+        .get()
+        .then((QuerySnapshot querySnapshot) async {
       //load user data
       setState(() {
         for (int i = 0; i < querySnapshot.docs.length; i++) {
@@ -95,6 +101,7 @@ class _HomeScreenState extends State<HomeScreen>
         FirebaseFirestore.instance.collection("Ricette");
     recipesCollection
         .orderBy("Timestamp", descending: true)
+        .where("isApproved", isEqualTo: true)
         .limit(10)
         .get()
         .then((QuerySnapshot querySnapshot) async {
@@ -114,6 +121,9 @@ class _HomeScreenState extends State<HomeScreen>
             querySnapshot.docs[i].get("Categoria"));
         _lastTenRicette.add(ricetta);
       }
+      setState(() {
+        _lastTenRicetteLoaded = true;
+      });
     });
   }
 
@@ -127,8 +137,6 @@ class _HomeScreenState extends State<HomeScreen>
     return result;
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
@@ -137,11 +145,11 @@ class _HomeScreenState extends State<HomeScreen>
       child: Scaffold(
           backgroundColor: Colors.white,
           floatingActionButton: SpeedDial(
-            marginEnd: width*(0.0275),
-            marginBottom: width*(0.0275),
+            marginEnd: width * (0.0275),
+            marginBottom: width * (0.0275),
             icon: Icons.menu,
             activeIcon: Icons.close,
-            buttonSize: width*(0.15),
+            buttonSize: width * (0.15),
             visible: true,
             closeManually: false,
             renderOverlay: false,
@@ -155,41 +163,58 @@ class _HomeScreenState extends State<HomeScreen>
             shape: CircleBorder(),
             children: [
               SpeedDialChild(
-                child: Icon(Icons.edit,color: CustomColors.white,),
+                child: Icon(
+                  Icons.edit,
+                  color: CustomColors.white,
+                ),
                 backgroundColor: CustomColors.red,
                 label: 'Aggiungi una ricetta',
-                labelStyle: TextStyle(fontSize: 18.0,color: CustomColors.white),
+                labelStyle:
+                    TextStyle(fontSize: 18.0, color: CustomColors.white),
                 labelBackgroundColor: CustomColors.red,
                 onTap: () {},
               ),
               SpeedDialChild(
-                child: Icon(Icons.search,color: CustomColors.white,),
+                child: Icon(
+                  Icons.search,
+                  color: CustomColors.white,
+                ),
                 backgroundColor: CustomColors.red,
                 label: 'Ricerca',
-                labelStyle: TextStyle(fontSize: 18.0,color: CustomColors.white),
+                labelStyle:
+                    TextStyle(fontSize: 18.0, color: CustomColors.white),
                 labelBackgroundColor: CustomColors.red,
                 onTap: () {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (BuildContext context) =>
-                              SearchScreen(utente: _actualUser,)));
+                          builder: (BuildContext context) => SearchScreen(
+                                utente: _actualUser,
+                              )));
                 },
               ),
               SpeedDialChild(
-                child: Icon(Icons.favorite,color: CustomColors.white,),
+                child: Icon(
+                  Icons.favorite,
+                  color: CustomColors.white,
+                ),
                 backgroundColor: CustomColors.red,
                 label: 'Preferiti',
-                labelStyle: TextStyle(fontSize: 18.0,color: CustomColors.white),
+                labelStyle:
+                    TextStyle(fontSize: 18.0, color: CustomColors.white),
                 labelBackgroundColor: CustomColors.red,
                 onTap: () {},
               ),
               SpeedDialChild(
-                child: Icon(Icons.settings,color: CustomColors.white,),
+                child: Icon(
+                  Icons.settings,
+                  color: CustomColors.white,
+                ),
                 backgroundColor: CustomColors.red,
                 labelBackgroundColor: CustomColors.red,
                 label: 'Impostazioni',
-                labelStyle: TextStyle(fontSize: 18.0,color: CustomColors.white),
+                labelStyle:
+                    TextStyle(fontSize: 18.0, color: CustomColors.white),
                 onTap: () {},
               ),
             ],
@@ -199,6 +224,9 @@ class _HomeScreenState extends State<HomeScreen>
               RefreshIndicator(
                 color: CustomColors.red,
                 onRefresh: () {
+                  _userLoaded = false;
+                  _lastTenRicetteLoaded = false;
+                  _currentIndex=0;
                   loadActualUser();
                   loadTenRecepies();
                   loadLastTenRecepies();
@@ -242,17 +270,20 @@ class _HomeScreenState extends State<HomeScreen>
                       items: _tenRicette.map((card) {
                         return Builder(builder: (BuildContext context) {
                           return Padding(
-                            padding: EdgeInsets.all(width*.01),
+                            padding: EdgeInsets.all(width * .01),
                             child: Container(
                               height: height * (0.30),
                               width: width,
                               child: InkWell(
-                                onTap: (){
+                                onTap: () {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                           builder: (BuildContext context) =>
-                                              RicettaShow(utente: _actualUser,ricetta: card,)));
+                                              RicettaShow(
+                                                utente: _actualUser,
+                                                ricetta: card,
+                                              )));
                                 },
                                 child: Stack(
                                   fit: StackFit.expand,
@@ -358,112 +389,22 @@ class _HomeScreenState extends State<HomeScreen>
                         ),
                       ),
                     ),
-                    ListView.builder(
-                        itemCount: _lastTenRicette.length,
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemBuilder: (context, i) {
-                          return Container(
-                            height: MediaQuery.of(context).size.height * .2,
-                            width: MediaQuery.of(context).size.width,
-                            child: Padding(
-                              padding: EdgeInsets.all(
-                                  MediaQuery.of(context).size.width * (.02)),
-                              child: Material(
-                                child: InkWell(
-                                  onTap: (){
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (BuildContext context) =>
-                                                RicettaShow(utente: _actualUser,ricetta: _lastTenRicette[i],)));
-                                  },
-                                  child: Stack(
-                                    fit: StackFit.expand,
-                                    children: [
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(8.0),
-                                        child: Image.network(
-                                          _lastTenRicette[i].thumbnail,
-                                          fit: BoxFit.cover,
-                                          loadingBuilder: (BuildContext context,
-                                              Widget child,
-                                              ImageChunkEvent loadingProgress) {
-                                            if (loadingProgress == null)
-                                              return child;
-                                            return Center(
-                                              child: CircularProgressIndicator(
-                                                value: loadingProgress
-                                                            .expectedTotalBytes !=
-                                                        null
-                                                    ? loadingProgress
-                                                            .cumulativeBytesLoaded /
-                                                        loadingProgress
-                                                            .expectedTotalBytes
-                                                    : null,
-                                                valueColor:
-                                                    new AlwaysStoppedAnimation<
-                                                        Color>(CustomColors.red),
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                      ),
-                                      Container(
-                                        height:
-                                            MediaQuery.of(context).size.width * 0.1,
-                                        width: MediaQuery.of(context).size.width,
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(8),
-                                          gradient: LinearGradient(
-                                            begin: Alignment(0, -1),
-                                            end: Alignment(0, 0.5),
-                                            colors: [
-                                              const Color(0xCC000000)
-                                                  .withOpacity(0.1),
-                                              const Color(0x00000000),
-                                              const Color(0x00000000),
-                                              const Color(0xCC000000)
-                                                  .withOpacity(0.6),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                      Row(
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.all(12.0),
-                                            child: Align(
-                                                alignment: Alignment.bottomLeft,
-                                                child: FittedBox(
-                                                    fit: BoxFit.contain,
-                                                    child: Text(
-                                                      _lastTenRicette[i].title,
-                                                      style: TextStyle(
-                                                          fontSize:
-                                                              MediaQuery.of(context)
-                                                                      .size
-                                                                      .width *
-                                                                  (.05),
-                                                          color:
-                                                              CustomColors.white),
-                                                    ))),
-                                          ),
-                                        ],
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          );
-                        })
+                    _userLoaded && _lastTenRicetteLoaded
+                        ? RicettaButton(
+                            utente: _actualUser, ricette: _lastTenRicette)
+                        : Column(
+                            children: [
+                              CircularProgressIndicator(
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(Colors.red),
+                              )
+                            ],
+                          )
                   ]),
                 ),
               ),
             ],
-          )
-      ),
+          )),
     );
   }
 

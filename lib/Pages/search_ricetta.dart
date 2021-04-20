@@ -5,6 +5,7 @@ import 'package:flutter_search_bar/flutter_search_bar.dart';
 import 'package:knife_and_spoon/Assets/custom_colors.dart';
 import 'package:knife_and_spoon/Models/ricetta.dart';
 import 'package:knife_and_spoon/Models/utente.dart';
+import 'package:knife_and_spoon/Widgets/ricetta_button.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({Key key, @required Utente utente}) : _utente = utente;
@@ -17,14 +18,17 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   Utente _actualUser;
   SearchBar searchBar;
-  String _searchTitle="Trova una ricetta";
-  List<Ricetta> _foundRecepies=[];
+  String _searchTitle = "Trova una ricetta";
+  List<Ricetta> _foundRecepies = [];
+  bool _hasSearched = false;
+  bool _isLoading=false;
 
   @override
   void initState() {
     _actualUser = widget._utente;
     super.initState();
   }
+
   AppBar buildAppBar(BuildContext context) {
     return AppBar(
         title: Text(_searchTitle),
@@ -36,16 +40,24 @@ class _SearchScreenState extends State<SearchScreen> {
     searchBar = new SearchBar(
         inBar: false,
         setState: setState,
-        hintText: "Scrivi qui...",
+        hintText: "Scrivi qui cosa cercare...",
         onSubmitted: updateSearch,
-        buildDefaultAppBar: buildAppBar);
+        buildDefaultAppBar: buildAppBar,);
   }
 
-  void searchOnFirebase(String value)
-  {
+  void searchOnFirebase(String value) {
     _foundRecepies.clear();
-      FirebaseFirestore.instance.collection("Ricette").where("Titolo",isEqualTo: value).get().then((QuerySnapshot querySnapshot) async{
-        for (int i = 0; i < querySnapshot.docs.length; i++) {
+    FirebaseFirestore.instance
+        .collection("Ricette")
+        .where("isApproved", isEqualTo: true)
+        .get()
+        .then((QuerySnapshot querySnapshot) async {
+      for (int i = 0; i < querySnapshot.docs.length; i++) {
+        if (querySnapshot.docs[i]
+            .get("Titolo")
+            .toString()
+            .toLowerCase()
+            .contains(value)) {
           Ricetta ricetta = new Ricetta(
               querySnapshot.docs[i].id,
               querySnapshot.docs[i].get("Autore"),
@@ -60,36 +72,56 @@ class _SearchScreenState extends State<SearchScreen> {
               querySnapshot.docs[i].get("Timestamp"),
               querySnapshot.docs[i].get("Categoria"));
           _foundRecepies.add(ricetta);
+
         }
-      });
+      }
+      _isLoading=false;
+      _hasSearched = true;
+    });
   }
-  void updateSearch(String value)
-  {
-    if(value.trim().isNotEmpty)
-    {
+
+  void updateSearch(String value) {
+    if (value.trim().isNotEmpty) {
       searchOnFirebase(value);
       setState(() {
-        _searchTitle=value;
+        _isLoading=true;
+        _searchTitle = value;
       });
     }
-    
-    
-
-
-
   }
 
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
-    return SafeArea(child:
-    Scaffold(appBar: searchBar.build(context),
-    body: Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [Text("CIAO")],
-    ),));
+    return SafeArea(
+        child: Scaffold(
+            appBar: searchBar.build(context),
+            body: SingleChildScrollView(
+              child: _isLoading? buildText("Sto cercando..."): _foundRecepies.length != 0
+                  ? RicettaButton(
+                      utente: _actualUser,
+                      ricette: _foundRecepies,
+                    )
+                  : _hasSearched
+                      ? buildText("Nessun risultato")
+                      : buildText("Clicca sulla lente di ingrandimento"),
+            )));
   }
-
-
+  
+  Widget buildText(String s)
+  {
+    var height = MediaQuery.of(context).size.height;
+    var width = MediaQuery.of(context).size.width;
+    return Container(
+        height: height,
+        width: width,
+        child: Align(
+            alignment: FractionalOffset.center,
+            child: Text(
+              s,
+              textAlign: TextAlign.center,
+              style: TextStyle(color: CustomColors.gray, fontSize: width*(.05)),
+            )));
+  }
 }

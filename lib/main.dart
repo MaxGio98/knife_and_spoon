@@ -18,7 +18,22 @@ class StartingPoint extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.indigo,
+        cursorColor: Colors.red,
+        primarySwatch: MaterialColor(
+          0xFFB10000,
+          const <int, Color>{
+            50: const Color(0xFFB10000),
+            100: const Color(0xFFB10000),
+            200: const Color(0xFFB10000),
+            300: const Color(0xFFB10000),
+            400: const Color(0xFFB10000),
+            500: const Color(0xFFB10000),
+            600: const Color(0xFFB10000),
+            700: const Color(0xFFB10000),
+            800: const Color(0xFFB10000),
+            900: const Color(0xFFB10000),
+          },
+        ),
         brightness: Brightness.light,
         accentColor: CustomColors.red,
         accentColorBrightness: Brightness.light,
