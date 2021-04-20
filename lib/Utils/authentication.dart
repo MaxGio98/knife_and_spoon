@@ -4,10 +4,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:knife_and_spoon/Pages/home_screen.dart';
 import 'package:knife_and_spoon/Pages/sign_in_screen.dart';
-import 'package:knife_and_spoon/Pages/username_insert.dart';
+import 'package:knife_and_spoon/Pages/username_insert_screen.dart';
 
-import '../Pages/home.dart';
 
 class Authentication {
   static Future initializeFirebase({

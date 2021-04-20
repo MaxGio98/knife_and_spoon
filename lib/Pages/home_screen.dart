@@ -9,8 +9,10 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:knife_and_spoon/Assets/custom_colors.dart';
 import 'package:knife_and_spoon/Models/ricetta.dart';
 import 'package:knife_and_spoon/Models/utente.dart';
-import 'package:knife_and_spoon/Pages/ricetta_show.dart';
-import 'package:knife_and_spoon/Pages/search_ricetta.dart';
+import 'package:knife_and_spoon/Pages/favorite_screen.dart';
+import 'package:knife_and_spoon/Pages/ricetta_show_screen.dart';
+import 'package:knife_and_spoon/Pages/search_ricetta_screen.dart';
+
 import 'package:knife_and_spoon/Widgets/ricetta_button.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -203,7 +205,14 @@ class _HomeScreenState extends State<HomeScreen>
                 labelStyle:
                     TextStyle(fontSize: 18.0, color: CustomColors.white),
                 labelBackgroundColor: CustomColors.red,
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (BuildContext context) => FavoriteScreen(
+                            utente: _actualUser,
+                          )));
+                },
               ),
               SpeedDialChild(
                 child: Icon(

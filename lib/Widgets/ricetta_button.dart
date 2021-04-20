@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:knife_and_spoon/Assets/custom_colors.dart';
 import 'package:knife_and_spoon/Models/ricetta.dart';
 import 'package:knife_and_spoon/Models/utente.dart';
-import 'package:knife_and_spoon/Pages/ricetta_show.dart';
+import 'package:knife_and_spoon/Pages/ricetta_show_screen.dart';
 
 class RicettaButton extends StatefulWidget {
   const RicettaButton(

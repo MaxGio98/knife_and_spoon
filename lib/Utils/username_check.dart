@@ -7,7 +7,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:knife_and_spoon/Assets/custom_colors.dart';
-import 'package:knife_and_spoon/Pages/home.dart';
+import 'package:knife_and_spoon/Pages/home_screen.dart';
 
 
 Future<void> checkUsername(String newUsername, BuildContext context,

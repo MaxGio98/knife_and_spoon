@@ -2,8 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:knife_and_spoon/Assets/custom_colors.dart';
-import 'package:knife_and_spoon/Pages/home.dart';
-import 'package:knife_and_spoon/Pages/username_insert.dart';
+import 'package:knife_and_spoon/Pages/home_screen.dart';
+import 'package:knife_and_spoon/Pages/username_insert_screen.dart';
 import 'package:knife_and_spoon/Utils/authentication.dart';
 
 class GoogleSignInButton extends StatefulWidget {
