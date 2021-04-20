@@ -10,6 +10,7 @@ import 'package:knife_and_spoon/Assets/custom_colors.dart';
 import 'package:knife_and_spoon/Models/ricetta.dart';
 import 'package:knife_and_spoon/Models/utente.dart';
 import 'package:knife_and_spoon/Pages/ricetta_show.dart';
+import 'package:knife_and_spoon/Pages/search_ricetta.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -167,7 +168,13 @@ class _HomeScreenState extends State<HomeScreen>
                 label: 'Ricerca',
                 labelStyle: TextStyle(fontSize: 18.0,color: CustomColors.white),
                 labelBackgroundColor: CustomColors.red,
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (BuildContext context) =>
+                              SearchScreen(utente: _actualUser,)));
+                },
               ),
               SpeedDialChild(
                 child: Icon(Icons.favorite,color: CustomColors.white,),

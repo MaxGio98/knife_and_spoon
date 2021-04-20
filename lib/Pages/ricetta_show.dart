@@ -35,7 +35,7 @@ class _RicettaShowState extends State<RicettaShow> {
     _ricetta = widget._ricetta;
     setSvg();
     loadFavorite();
-    loadPublisher();
+    _loadPublisher();
   }
 
   void setSvg() {
@@ -71,7 +71,7 @@ class _RicettaShowState extends State<RicettaShow> {
     }
   }
 
-  void favoriteManagement() {
+  void _favoriteManagement() {
     DocumentReference actualUserFav =
         FirebaseFirestore.instance.collection("Utenti").doc(_actualUser.id);
     if (!isFav) {
@@ -93,7 +93,7 @@ class _RicettaShowState extends State<RicettaShow> {
     }
   }
 
-  void loadPublisher() {
+  void _loadPublisher() {
     DocumentReference publisherData =
         FirebaseFirestore.instance.collection("Utenti").doc(_ricetta.authorId);
     publisherData.get().then((value) {
@@ -104,18 +104,57 @@ class _RicettaShowState extends State<RicettaShow> {
     });
   }
 
-  String returnCorrectMinute() {
+  String _returnCorrectMinute() {
     if (_ricetta.tempo == 1) {
       return "o";
     }
     return "i";
   }
 
-  String returnCorrectPersone() {
+  String _returnCorrectPersone() {
     if (_ricetta.persone == 1) {
       return "a";
     }
     return "e";
+  }
+
+  String _returnCorrectQuant(int i) {
+    if (_ricetta.ingredienti[i]["Unità misura"] == "q.b.") {
+      return "";
+    }
+    return _ricetta.ingredienti[i]["Quantità"].toString();
+  }
+
+  String _returnCorrectUM(int i) {
+    double quant = double.parse(_ricetta.ingredienti[i]["Quantità"].toString());
+    String correctForm = "";
+    String uM = _ricetta.ingredienti[i]["Unità misura"].toString();
+    if (quant == 1) {
+      if (uM == ("grammi")) {
+        correctForm = "grammo";
+      } else if (uM == ("litri")) {
+        correctForm = "litro";
+      } else if (uM == ("millilitri")) {
+        correctForm = "millilitro";
+      } else {
+        correctForm = uM;
+      }
+    } else {
+      if (uM == ("bicchiere")) {
+        if (quant >= 2) {
+          correctForm = "bicchieri";
+        } else {
+          correctForm = uM;
+        }
+      } else if (uM == ("cucchiaio")) {
+        correctForm = "cucchiai";
+      } else if (uM == ("cucchiaino")) {
+        correctForm = "cucchiaini";
+      } else {
+        correctForm = uM;
+      }
+    }
+    return correctForm;
   }
 
   @override
@@ -126,7 +165,7 @@ class _RicettaShowState extends State<RicettaShow> {
         child: Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          favoriteManagement();
+          _favoriteManagement();
           snackBarMessage();
         },
         backgroundColor: CustomColors.red,
@@ -175,160 +214,225 @@ class _RicettaShowState extends State<RicettaShow> {
             ),
           ];
         },
-        body: Padding(
-          padding: EdgeInsets.all(width * (.04)),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Row(
+        body: ListView(
+          children: [
+            Padding(
+              padding: EdgeInsets.all(width*(0.04)),
+              child: Column(
                 children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(width * 0.175),
-                    child: Image.network(
-                      publisherImageURL,
-                      fit: BoxFit.cover,
-                      height: width * (0.175),
-                      width: width * (0.175),
-                      loadingBuilder: (BuildContext context, Widget child,
-                          ImageChunkEvent loadingProgress) {
-                        if (loadingProgress == null) return child;
-                        return Center(
-                          child: CircularProgressIndicator(
-                            value: loadingProgress.expectedTotalBytes != null
-                                ? loadingProgress.cumulativeBytesLoaded /
+                  Row(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(width * 0.175),
+                        child: Image.network(
+                          publisherImageURL,
+                          fit: BoxFit.cover,
+                          height: width * (0.175),
+                          width: width * (0.175),
+                          loadingBuilder: (BuildContext context, Widget child,
+                              ImageChunkEvent loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return Center(
+                              child: CircularProgressIndicator(
+                                value: loadingProgress.expectedTotalBytes != null
+                                    ? loadingProgress.cumulativeBytesLoaded /
                                     loadingProgress.expectedTotalBytes
-                                : null,
-                            valueColor: new AlwaysStoppedAnimation<Color>(
-                                CustomColors.red),
-                          ),
-                        );
-                      },
-                    ),
+                                    : null,
+                                valueColor: new AlwaysStoppedAnimation<Color>(
+                                    CustomColors.red),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(left: width * (0.02)),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Autore",
+                              style: TextStyle(fontSize: width * (0.045)),
+                            ),
+                            Text(
+                              publisherName,
+                              style: TextStyle(fontSize: width * (0.06)),
+                            )
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                   Padding(
-                    padding: EdgeInsets.only(left: width * (0.02)),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    padding: EdgeInsets.only(top: height * (0.02)),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Text(
-                          "Autore",
-                          style: TextStyle(fontSize: width * (0.045)),
+                        SvgPicture.asset(
+                          svgPath,
+                          height: width * (0.125),
                         ),
-                        Text(
-                          publisherName,
-                          style: TextStyle(fontSize: width * (0.06)),
-                        )
+                        Padding(
+                          padding: EdgeInsets.only(left: width * (0.02)),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Categoria",
+                                style: TextStyle(fontSize: width * (0.045)),
+                              ),
+                              Text(
+                                _ricetta.categoria,
+                                style: TextStyle(fontSize: width * (0.06)),
+                              )
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                   ),
+                  Padding(
+                    padding: EdgeInsets.only(top: height * (0.02)),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SvgPicture.asset(
+                          "assets/clock.svg",
+                          height: width * (0.125),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(left: width * (0.02)),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                _ricetta.tempo + " minut" + _returnCorrectMinute(),
+                                style: TextStyle(fontSize: width * (0.06)),
+                              )
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: height * (0.02)),
+                    child: Row(
+                      children: [
+                        SvgPicture.asset(
+                          "assets/group.svg",
+                          height: width * (0.125),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(left: width * (0.02)),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                _ricetta.persone +
+                                    " person" +
+                                    _returnCorrectPersone(),
+                                style: TextStyle(fontSize: width * (0.06)),
+                              )
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: height * (0.035)),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(bottom: height * (0.02)),
+                              child: Text(
+                                "Ingredienti",
+                                style: TextStyle(fontSize: width * (0.06)),
+                              ),
+                            ),
+                            Container(
+                              width: width * .92,
+                              child: ListView.builder(
+                                  itemCount: _ricetta.ingredienti.length,
+                                  physics: NeverScrollableScrollPhysics(),
+                                  shrinkWrap: true,
+                                  itemBuilder: (context, i) {
+                                    return Padding(
+                                      padding: EdgeInsets.only(top: height*(0.007)),
+                                      child: Row(
+                                        crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                        children: [
+                                          Text("\u2022 ",style: TextStyle(color: CustomColors.red, fontSize: width*(0.1)),),
+                                          Expanded(
+                                            child: Text(_ricetta.ingredienti[i]["Nome"]
+                                                .toString() +
+                                                " " +
+                                                _returnCorrectQuant(i) +
+                                                " " +
+                                                _returnCorrectUM(i),style: TextStyle(fontSize: width*(0.06)),),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  }),
+                            )
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: height * (0.035)),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(bottom: height * (0.01)),
+                              child: Text(
+                                "Passaggi",
+                                style: TextStyle(fontSize: width * (0.06)),
+                              ),
+                            ),
+                            Container(
+                              width: width * .92,
+                              alignment: Alignment.topLeft,
+                              child: ListView.builder(
+                                  itemCount: _ricetta.steps.length,
+                                  physics: NeverScrollableScrollPhysics(),
+                                  shrinkWrap: true,
+                                  itemBuilder: (context, i) {
+                                    return Padding(
+                                      padding: EdgeInsets.only(bottom: height*(0.01)),
+                                      child: Row(
+                                        children: [
+                                          Text("\u2022 ",style: TextStyle(color: CustomColors.red, fontSize: width*(0.2)),),
+                                          Expanded(
+                                            child: Text(_ricetta.steps[i].toString(),style: TextStyle(fontSize: width*(0.06)),),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  }),
+                            )
+                          ],
+                        ),
+                      ],
+                    ),
+                  )
                 ],
               ),
-              Padding(
-                padding: EdgeInsets.only(top: height * (0.02)),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SvgPicture.asset(
-                      svgPath,
-                      height: width * (0.125),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(left: width * (0.02)),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Categoria",
-                            style: TextStyle(fontSize: width * (0.045)),
-                          ),
-                          Text(
-                            _ricetta.categoria,
-                            style: TextStyle(fontSize: width * (0.06)),
-                          )
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(top: height * (0.02)),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SvgPicture.asset(
-                      "assets/clock.svg",
-                      height: width * (0.125),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(left: width * (0.02)),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            _ricetta.tempo + " minut" + returnCorrectMinute(),
-                            style: TextStyle(fontSize: width * (0.06)),
-                          )
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(top: height * (0.02)),
-                child: Row(
-                  children: [
-                    SvgPicture.asset(
-                      "assets/group.svg",
-                      height: width * (0.125),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(left: width * (0.02)),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            _ricetta.persone +
-                                " person" +
-                                returnCorrectPersone(),
-                            style: TextStyle(fontSize: width * (0.06)),
-                          )
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(top: height * (0.035)),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(bottom: height * (0.02)),
-                      child: Text(
-                        "Ingredienti",
-                        style: TextStyle(fontSize: width * (0.06)),
-                      ),
-                    ),
-                    /*ListView.builder(
-                        itemCount: _ricetta.ingredienti.length,
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemBuilder: (context, i) {
-                          return Row(
-                            children: [
-                              Text(_ricetta.ingredienti[i]["Nome"])
+            ),
 
-                            ],
-                          );
-                        })*/
-                  ],
-                ),
-              )
-            ],
-          ),
+          ],
         ),
       ),
     ));
