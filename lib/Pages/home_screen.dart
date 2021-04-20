@@ -12,6 +12,7 @@ import 'package:knife_and_spoon/Models/utente.dart';
 import 'package:knife_and_spoon/Pages/favorite_screen.dart';
 import 'package:knife_and_spoon/Pages/ricetta_show_screen.dart';
 import 'package:knife_and_spoon/Pages/search_ricetta_screen.dart';
+import 'package:knife_and_spoon/Pages/settings_screen.dart';
 
 import 'package:knife_and_spoon/Widgets/ricetta_button.dart';
 
@@ -224,7 +225,14 @@ class _HomeScreenState extends State<HomeScreen>
                 label: 'Impostazioni',
                 labelStyle:
                     TextStyle(fontSize: 18.0, color: CustomColors.white),
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (BuildContext context) => SettingsScreen(
+                            utente: _actualUser,
+                          )));
+                },
               ),
             ],
           ),

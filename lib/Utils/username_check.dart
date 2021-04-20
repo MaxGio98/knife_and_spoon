@@ -97,7 +97,7 @@ Future<void> checkUsername(String newUsername, BuildContext context,
         List<String> preferiti = [];
         Map<String, Object> user = new HashMap();
         user["Mail"] = actualUser.email;
-        user["Nome"] = newUsername;
+        user["Nome"] = newUsername.trim();
         user["isAdmin"] = false;
         user["Preferiti"] = preferiti;
         File image = File(imageData);
