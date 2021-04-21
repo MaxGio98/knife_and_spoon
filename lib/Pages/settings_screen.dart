@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:knife_and_spoon/Assets/custom_colors.dart';
 import 'package:knife_and_spoon/Models/utente.dart';
 import 'package:knife_and_spoon/Pages/sign_in_screen.dart';
+import 'package:knife_and_spoon/Pages/username_change_screen.dart';
 import 'package:knife_and_spoon/Utils/authentication.dart';
 
 class SettingsScreen extends StatefulWidget
@@ -39,12 +40,12 @@ class _SettingsScreenState extends State<SettingsScreen>
               children: [
                 Center(
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(250),
+                    borderRadius: BorderRadius.circular(width*(0.7)),
                     child: Image.network(
                       _actualUser.immagine,
                       fit: BoxFit.cover,
-                      height: 250,
-                      width: 250,
+                      height: width*(0.7),
+                      width: width*(0.7),
                       loadingBuilder: (BuildContext context, Widget child,
                           ImageChunkEvent loadingProgress) {
                         if (loadingProgress == null) return child;
@@ -59,7 +60,7 @@ class _SettingsScreenState extends State<SettingsScreen>
                           ),
                         );
                       },
-                    ),
+                    )
                   ),
                 ),
                 Padding(
@@ -107,6 +108,13 @@ class _SettingsScreenState extends State<SettingsScreen>
                           ),
                         ),
                         onPressed: ()  {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (BuildContext context) =>
+                                      ChangeUsernameScreen(
+                                        utente: _actualUser,
+                                      )));
                         },
                         child: Text(
                           'Cambia username',
@@ -144,8 +152,7 @@ class _SettingsScreenState extends State<SettingsScreen>
                         ),
                         onPressed: ()  async {
                           await Authentication.signOut(context: context);
-                          Navigator.of(context)
-                              .pushReplacement(_routeToSignInScreen());
+                          Navigator.of(context).pushAndRemoveUntil(_routeToSignInScreen(),(Route<dynamic> route) => false);
 
                         },
                         child: Text(
@@ -168,6 +175,7 @@ class _SettingsScreenState extends State<SettingsScreen>
     )
     );
   }
+
   Route _routeToSignInScreen() {
     return PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) => SignInScreen(),
@@ -186,5 +194,4 @@ class _SettingsScreenState extends State<SettingsScreen>
       },
     );
   }
-
-}
+  }

@@ -35,6 +35,8 @@ dependencies:
   flutter_speed_dial: ^3.0.5
   flutter_svg: ^0.21.0+1
   flutter_search_bar: ^2.1.0
+  double_back_to_close_app: ^2.0.1
+  uuid: ^3.0.4
 
 
   # The following adds the Cupertino Icons font to your application.

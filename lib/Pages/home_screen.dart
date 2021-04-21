@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:double_back_to_close_app/double_back_to_close_app.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -236,192 +237,199 @@ class _HomeScreenState extends State<HomeScreen>
               ),
             ],
           ),
-          body: Stack(
-            children: [
-              RefreshIndicator(
-                color: CustomColors.red,
-                onRefresh: () {
-                  _userLoaded = false;
-                  _lastTenRicetteLoaded = false;
-                  _currentIndex=0;
-                  loadActualUser();
-                  loadTenRecepies();
-                  loadLastTenRecepies();
-                  return Future.value(true);
-                },
-                child: SingleChildScrollView(
-                  child: Column(children: <Widget>[
-                    Container(
-                      padding: EdgeInsets.all(width * (.02)),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          buildImage(context),
-                          SizedBox(
-                            width: width * (0.01),
-                          ),
-                          Text(
-                            "Ciao " +
-                                _actualUser.nome +
-                                "!\nBenvenuto su Knife&Spoon.",
-                            style: TextStyle(fontSize: width * (.055)),
-                          )
-                        ],
-                      ),
-                    ),
-                    CarouselSlider(
-                      options: CarouselOptions(
-                        height: height * (.3),
-                        autoPlay: true,
-                        autoPlayInterval: Duration(seconds: 10),
-                        autoPlayAnimationDuration: Duration(milliseconds: 800),
-                        autoPlayCurve: Curves.fastOutSlowIn,
-                        pauseAutoPlayOnTouch: true,
-                        aspectRatio: 2.0,
-                        onPageChanged: (index, reason) {
-                          setState(() {
-                            _currentIndex = index;
-                          });
-                        },
-                      ),
-                      items: _tenRicette.map((card) {
-                        return Builder(builder: (BuildContext context) {
-                          return Padding(
-                            padding: EdgeInsets.all(width * .01),
-                            child: Container(
-                              height: height * (0.30),
-                              width: width,
-                              child: InkWell(
-                                onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (BuildContext context) =>
-                                              RicettaShow(
-                                                utente: _actualUser,
-                                                ricetta: card,
-                                              )));
-                                },
-                                child: Stack(
-                                  fit: StackFit.expand,
-                                  children: [
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(8.0),
-                                      child: Image.network(
-                                        card.thumbnail,
-                                        fit: BoxFit.cover,
-                                        loadingBuilder: (BuildContext context,
-                                            Widget child,
-                                            ImageChunkEvent loadingProgress) {
-                                          if (loadingProgress == null)
-                                            return child;
-                                          return Center(
-                                            child: CircularProgressIndicator(
-                                              value: loadingProgress
-                                                          .expectedTotalBytes !=
-                                                      null
-                                                  ? loadingProgress
-                                                          .cumulativeBytesLoaded /
-                                                      loadingProgress
-                                                          .expectedTotalBytes
-                                                  : null,
-                                              valueColor:
-                                                  new AlwaysStoppedAnimation<
-                                                      Color>(CustomColors.red),
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                    Container(
-                                      height: width * 0.1,
-                                      width: width,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(8),
-                                        gradient: LinearGradient(
-                                          begin: Alignment(0, -1),
-                                          end: Alignment(0, 0.5),
-                                          colors: [
-                                            const Color(0xCC000000)
-                                                .withOpacity(0.1),
-                                            const Color(0x00000000),
-                                            const Color(0x00000000),
-                                            const Color(0xCC000000)
-                                                .withOpacity(0.6),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    Row(
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.all(12.0),
-                                          child: Align(
-                                              alignment: Alignment.bottomLeft,
-                                              child: FittedBox(
-                                                  fit: BoxFit.contain,
-                                                  child: Text(
-                                                    card.title,
-                                                    style: TextStyle(
-                                                        fontSize: width * (.05),
-                                                        color:
-                                                            CustomColors.white),
-                                                  ))),
-                                        ),
-                                      ],
-                                    )
-                                  ],
-                                ),
-                              ),
+          body: DoubleBackToCloseApp(
+            child: Stack(
+              children: [
+                RefreshIndicator(
+                  color: CustomColors.red,
+                  onRefresh: () {
+                    _userLoaded = false;
+                    _lastTenRicetteLoaded = false;
+                    _currentIndex=0;
+                    loadActualUser();
+                    loadTenRecepies();
+                    loadLastTenRecepies();
+                    return Future.value(true);
+                  },
+                  child: SingleChildScrollView(
+                    child: Column(children: <Widget>[
+                      Container(
+                        padding: EdgeInsets.all(width * (.02)),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            buildImage(context),
+                            SizedBox(
+                              width: width * (0.01),
                             ),
-                          );
-                        });
-                      }).toList(),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: map<Widget>(_tenRicette, (index, url) {
-                        return Container(
-                          width: width * (0.035),
-                          height: width * (0.035),
-                          margin: EdgeInsets.symmetric(
-                              vertical: height * (0.01),
-                              horizontal: width * (0.0075)),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: _currentIndex == index
-                                ? CustomColors.red
-                                : Colors.grey,
-                          ),
-                        );
-                      }),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: height * (0.02)),
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: Text(
-                          "Le ultime ricette pubblicate",
-                          style: TextStyle(fontSize: width * (.05)),
+                            Text(
+                              "Ciao " +
+                                  _actualUser.nome +
+                                  "!\nBenvenuto su Knife&Spoon.",
+                              style: TextStyle(fontSize: width * (.055)),
+                            )
+                          ],
                         ),
                       ),
-                    ),
-                    _userLoaded && _lastTenRicetteLoaded
-                        ? RicettaButton(
-                            utente: _actualUser, ricette: _lastTenRicette)
-                        : Column(
-                            children: [
-                              CircularProgressIndicator(
-                                valueColor:
-                                    AlwaysStoppedAnimation<Color>(Colors.red),
-                              )
-                            ],
-                          )
-                  ]),
+                      CarouselSlider(
+                        options: CarouselOptions(
+                          height: height * (.3),
+                          autoPlay: true,
+                          autoPlayInterval: Duration(seconds: 10),
+                          autoPlayAnimationDuration: Duration(milliseconds: 800),
+                          autoPlayCurve: Curves.fastOutSlowIn,
+                          pauseAutoPlayOnTouch: true,
+                          aspectRatio: 2.0,
+                          onPageChanged: (index, reason) {
+                            setState(() {
+                              _currentIndex = index;
+                            });
+                          },
+                        ),
+                        items: _tenRicette.map((card) {
+                          return Builder(builder: (BuildContext context) {
+                            return Padding(
+                              padding: EdgeInsets.all(width * .01),
+                              child: Container(
+                                height: height * (0.30),
+                                width: width,
+                                child: InkWell(
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (BuildContext context) =>
+                                                RicettaShow(
+                                                  utente: _actualUser,
+                                                  ricetta: card,
+                                                )));
+                                  },
+                                  child: Stack(
+                                    fit: StackFit.expand,
+                                    children: [
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(8.0),
+                                        child: Image.network(
+                                          card.thumbnail,
+                                          fit: BoxFit.cover,
+                                          loadingBuilder: (BuildContext context,
+                                              Widget child,
+                                              ImageChunkEvent loadingProgress) {
+                                            if (loadingProgress == null)
+                                              return child;
+                                            return Center(
+                                              child: CircularProgressIndicator(
+                                                value: loadingProgress
+                                                            .expectedTotalBytes !=
+                                                        null
+                                                    ? loadingProgress
+                                                            .cumulativeBytesLoaded /
+                                                        loadingProgress
+                                                            .expectedTotalBytes
+                                                    : null,
+                                                valueColor:
+                                                    new AlwaysStoppedAnimation<
+                                                        Color>(CustomColors.red),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                      Container(
+                                        height: width * 0.1,
+                                        width: width,
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(8),
+                                          gradient: LinearGradient(
+                                            begin: Alignment(0, -1),
+                                            end: Alignment(0, 0.5),
+                                            colors: [
+                                              const Color(0xCC000000)
+                                                  .withOpacity(0.1),
+                                              const Color(0x00000000),
+                                              const Color(0x00000000),
+                                              const Color(0xCC000000)
+                                                  .withOpacity(0.6),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                      Row(
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.all(12.0),
+                                            child: Align(
+                                                alignment: Alignment.bottomLeft,
+                                                child: FittedBox(
+                                                    fit: BoxFit.contain,
+                                                    child: Text(
+                                                      card.title,
+                                                      style: TextStyle(
+                                                          fontSize: width * (.05),
+                                                          color:
+                                                              CustomColors.white),
+                                                    ))),
+                                          ),
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          });
+                        }).toList(),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: map<Widget>(_tenRicette, (index, url) {
+                          return Container(
+                            width: width * (0.035),
+                            height: width * (0.035),
+                            margin: EdgeInsets.symmetric(
+                                vertical: height * (0.01),
+                                horizontal: width * (0.0075)),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: _currentIndex == index
+                                  ? CustomColors.red
+                                  : Colors.grey,
+                            ),
+                          );
+                        }),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: height * (0.02)),
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: Text(
+                            "Le ultime ricette pubblicate",
+                            style: TextStyle(fontSize: width * (.05)),
+                          ),
+                        ),
+                      ),
+                      _userLoaded && _lastTenRicetteLoaded
+                          ? RicettaButton(
+                              utente: _actualUser, ricette: _lastTenRicette)
+                          : Column(
+                              children: [
+                                CircularProgressIndicator(
+                                  valueColor:
+                                      AlwaysStoppedAnimation<Color>(Colors.red),
+                                )
+                              ],
+                            )
+                    ]),
+                  ),
                 ),
-              ),
-            ],
-          )),
+              ],
+            ),
+            snackBar: SnackBar(
+              content: Text("Esegui di nuovo l'azione per uscire"),
+            ),
+          ),
+
+      ),
     );
   }
 

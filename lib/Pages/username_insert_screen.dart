@@ -29,22 +29,25 @@ class _InsertUsernameScreenState extends State<InsertUsernameScreen> {
     super.initState();
   }
 
+
+  @override
+  void setState(VoidCallback fn) {
+    if(mounted) {
+      super.setState(fn);
+    }
+  }
+
   _asyncImgLoad() async {
-    //comment out the next two lines to prevent the device from getting
-    // the image from the web in order to prove that the picture is
-    // coming from the device instead of the web.
     var authority = _user.photoURL.split("//")[1].split("/")[0];
     var path = _user.photoURL.split(".com")[1];
     var uri = new Uri.https(authority, path);
-    var response = await get(uri); // <--2
+    var response = await get(uri);
     var documentDirectory = await getApplicationDocumentsDirectory();
     var firstPath = documentDirectory.path + "/images";
     var filePathAndName = documentDirectory.path + '/images/pic.jpg';
-    //comment out the next three lines to prevent the image from being saved
-    //to the device to show that it's coming from the internet
-    await Directory(firstPath).create(recursive: true); // <-- 1
-    File file2 = new File(filePathAndName); // <-- 2
-    file2.writeAsBytesSync(response.bodyBytes); // <-- 3
+    await Directory(firstPath).create(recursive: true);
+    File file2 = new File(filePathAndName);
+    file2.writeAsBytesSync(response.bodyBytes);
     setState(() {
       imageData = filePathAndName;
       dataLoaded = true;
@@ -59,6 +62,8 @@ class _InsertUsernameScreenState extends State<InsertUsernameScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var width=MediaQuery.of(context).size.width;
+    var height=MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: CustomColors.red,
       body: SingleChildScrollView(
@@ -82,11 +87,7 @@ class _InsertUsernameScreenState extends State<InsertUsernameScreen> {
                     Expanded(
                         flex: 6,
                         child: Padding(
-                          padding: const EdgeInsets.only(
-                            left: 16.0,
-                            right: 16.0,
-                            bottom: 20.0,
-                          ),
+                          padding: EdgeInsets.only(top:width*(0.05),left: width*(0.05),right: width*(0.05)),
                           child: Column(
                             children: <Widget>[
                               Text(
@@ -96,60 +97,53 @@ class _InsertUsernameScreenState extends State<InsertUsernameScreen> {
                                   fontSize: 26,
                                 ),
                               ),
-                              SizedBox(height: 16.0),
-                              TextField(
-                                cursorColor: CustomColors.white,
-                                decoration: InputDecoration(
-                                    counterStyle:
-                                        TextStyle(color: CustomColors.gray),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide:
-                                          BorderSide(color: CustomColors.gray),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(color: Colors.white),
-                                    ),
-                                    hintText: "Inserisci qui il tuo username",
-                                    hintStyle: TextStyle(color: CustomColors.gray)),
-                                controller: usernameController,
-                                maxLength: 20,
-                                style: TextStyle(color: CustomColors.white),
-                              ),
-                              SizedBox(
-                                height: 16,
+                              Padding(
+                                padding: EdgeInsets.only(top: width*(0.05)),
+                                child: TextField(
+                                  cursorColor: CustomColors.white,
+                                  decoration: InputDecoration(
+                                      counterStyle:
+                                          TextStyle(color: CustomColors.silver),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderSide:
+                                            BorderSide(color: CustomColors.silver),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(color: Colors.white),
+                                      ),
+                                      hintText: "Inserisci qui il tuo username",
+                                      hintStyle: TextStyle(color: CustomColors.silver)),
+                                  controller: usernameController,
+                                  maxLength: 20,
+                                  style: TextStyle(color: CustomColors.white),
+                                  onSubmitted: (value){
+                                    checkValue();
+                                  },
+                                ),
                               ),
                               AnimatedSwitcher(
                                 duration: Duration(milliseconds: 250),
-                                child:check?CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.white),): ElevatedButton(
-                                  style: ButtonStyle(
-                                    backgroundColor: MaterialStateProperty.all(
-                                      CustomColors.red,
-                                    ),
-                                    shape: MaterialStateProperty.all(
-                                      RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(10),
+                                child:check?CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.white),): SizedBox(
+                                  width: width*(0.75),
+                                  height: height*(0.075),
+                                  child: OutlinedButton(
+                                    style: ButtonStyle(
+                                      backgroundColor: MaterialStateProperty.all(CustomColors.white),
+                                      shape: MaterialStateProperty.all(
+                                        RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(40),
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  onPressed: () async {
-                                    setState(() {
-                                      check=true;
-                                    });
-                                    await checkUsername(usernameController.text, context,
-                                        _user, imageData);
-                                    setState(() {
-                                      check=false;
-                                    });
-                                  },
-                                  child: Padding(
-                                    padding: EdgeInsets.only(top: 8.0, bottom: 8.0),
+                                    onPressed: () async {
+                                      checkValue();
+                                    },
                                     child: Text(
                                       'Registrami!',
                                       style: TextStyle(
                                         fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                        letterSpacing: 2,
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.w600,
                                       ),
                                     ),
                                   ),
@@ -181,5 +175,17 @@ class _InsertUsernameScreenState extends State<InsertUsernameScreen> {
             valueColor: AlwaysStoppedAnimation<Color>(CustomColors.white)),
       );
     }
+  }
+
+  void checkValue() async
+  {
+    setState(() {
+      check=true;
+    });
+    await checkUsername(usernameController.text, context,
+        _user, imageData);
+    setState(() {
+      check=false;
+    });
   }
 }
