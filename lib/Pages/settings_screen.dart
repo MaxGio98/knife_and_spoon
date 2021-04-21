@@ -1,3 +1,8 @@
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_permission_validator/easy_permission_validator.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:knife_and_spoon/Assets/custom_colors.dart';
@@ -5,11 +10,15 @@ import 'package:knife_and_spoon/Models/utente.dart';
 import 'package:knife_and_spoon/Pages/sign_in_screen.dart';
 import 'package:knife_and_spoon/Pages/username_change_screen.dart';
 import 'package:knife_and_spoon/Utils/authentication.dart';
+import 'package:knife_and_spoon/Utils/get_image.dart';
+import 'package:knife_and_spoon/Widgets/permission_warning.dart';
+import 'package:uuid/uuid.dart';
 
 class SettingsScreen extends StatefulWidget
 {
   const SettingsScreen({Key key, @required Utente utente}): _utente=utente;
   final Utente _utente;
+
   @override
 _SettingsScreenState createState()=>_SettingsScreenState();
 }
@@ -17,10 +26,71 @@ _SettingsScreenState createState()=>_SettingsScreenState();
 class _SettingsScreenState extends State<SettingsScreen>
 {
   Utente _actualUser;
+  String _actualUserActualImg;
   @override
   void initState() {
     _actualUser=widget._utente;
+    _actualUserActualImg=_actualUser.immagine;
     super.initState();
+  }
+
+  void _showPicker(context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc) {
+          return SafeArea(
+            child: Container(
+              child: new Wrap(
+                children: <Widget>[
+                  new ListTile(
+                      leading: new Icon(Icons.photo_library),
+                      title: new Text('Galleria'),
+                      onTap: () async{
+                        File f=await getImageGallery();
+                        loadImageToFirebase(f);
+                        Navigator.of(context).pop();
+                      }),
+                  new ListTile(
+                    leading: new Icon(Icons.photo_camera),
+                    title: new Text('Camera'),
+                    onTap: () async{
+                      File f= await getImageCamera();
+                      loadImageToFirebase(f);
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+    );
+  }
+
+  void loadImageToFirebase(File image)async
+  {
+    var uuid=Uuid().v4();
+    if(image!=null)
+      {
+        FirebaseStorage storage = FirebaseStorage.instance;
+        Reference storageRef = storage.ref();
+        Reference imageRef = storageRef.child(uuid.toString() + ".jpg");
+        await imageRef.putFile(image);
+        await imageRef.getDownloadURL().then((url)
+        async {
+          await FirebaseFirestore.instance.collection("Utenti").doc(_actualUser.id).update({"Immagine":url}).then((value)
+          {
+            FirebaseStorage.instance.refFromURL(_actualUser.immagine).delete();
+          setState(() {
+            _actualUser.immagine=url;
+          });
+
+          });
+
+
+        });
+      }
+
   }
 
   @override
@@ -78,7 +148,25 @@ class _SettingsScreenState extends State<SettingsScreen>
                             ),
                           ),
                         ),
-                        onPressed: ()  {
+                        onPressed: ()  async{
+
+
+                          EasyPermissionValidator permissionValidatorStorage = EasyPermissionValidator(
+                            context: context,
+                            customDialog: buildWarningPermissions(context),
+                          );
+                          var resultStorage=await permissionValidatorStorage.storage();
+                          if(resultStorage)
+                          {
+                            EasyPermissionValidator permissionValidatorCamera = EasyPermissionValidator(
+                              context: context,
+                              customDialog: buildWarningPermissions(context),
+                            );
+                            var resultCamera = await permissionValidatorCamera.camera();
+                            if (resultCamera) {
+                              _showPicker(context);
+                            }
+                          }
                         },
                         child: Text(
                           'Cambia immagine profilo',
@@ -194,4 +282,4 @@ class _SettingsScreenState extends State<SettingsScreen>
       },
     );
   }
-  }
+}

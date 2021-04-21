@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:knife_and_spoon/Assets/custom_colors.dart';
 import 'package:knife_and_spoon/Models/utente.dart';
 import 'package:knife_and_spoon/Widgets/custom_alert_dialog.dart';
 
@@ -23,7 +22,7 @@ Future<void> checkChangeUsername(String newUsername, BuildContext context,Utente
       if (querySnapshot.docs.isNotEmpty) {
         return showDialog<void>(
           context: context,
-          barrierDismissible: false, // user must tap button!
+          barrierDismissible: false,
           builder: (BuildContext context) {
             return buildCustomAlertOKDialog(
                 context, "Attenzione", "Questo username è già in uso.");
