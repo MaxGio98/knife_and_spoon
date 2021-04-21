@@ -21,7 +21,7 @@ class _SearchScreenState extends State<SearchScreen> {
   String _searchTitle = "Trova una ricetta";
   List<Ricetta> _foundRecepies = [];
   bool _hasSearched = false;
-  bool _isLoading=false;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -38,11 +38,12 @@ class _SearchScreenState extends State<SearchScreen> {
 
   _SearchScreenState() {
     searchBar = new SearchBar(
-        inBar: false,
-        setState: setState,
-        hintText: "Scrivi qui cosa cercare...",
-        onSubmitted: updateSearch,
-        buildDefaultAppBar: buildAppBar,);
+      inBar: false,
+      setState: setState,
+      hintText: "Scrivi qui cosa cercare...",
+      onSubmitted: updateSearch,
+      buildDefaultAppBar: buildAppBar,
+    );
   }
 
   void searchOnFirebase(String value) {
@@ -72,10 +73,9 @@ class _SearchScreenState extends State<SearchScreen> {
               querySnapshot.docs[i].get("Timestamp"),
               querySnapshot.docs[i].get("Categoria"));
           _foundRecepies.add(ricetta);
-
         }
       }
-      _isLoading=false;
+      _isLoading = false;
       _hasSearched = true;
     });
   }
@@ -84,7 +84,7 @@ class _SearchScreenState extends State<SearchScreen> {
     if (value.trim().isNotEmpty) {
       searchOnFirebase(value);
       setState(() {
-        _isLoading=true;
+        _isLoading = true;
         _searchTitle = value;
       });
     }
@@ -98,19 +98,20 @@ class _SearchScreenState extends State<SearchScreen> {
         child: Scaffold(
             appBar: searchBar.build(context),
             body: SingleChildScrollView(
-              child: _isLoading? buildText("Sto cercando..."): _foundRecepies.length != 0
-                  ? RicettaButton(
-                      utente: _actualUser,
-                      ricette: _foundRecepies,
-                    )
-                  : _hasSearched
-                      ? buildText("Nessun risultato")
-                      : buildText("Clicca sulla lente di ingrandimento"),
+              child: _isLoading
+                  ? buildText("Sto cercando...")
+                  : _foundRecepies.length != 0
+                      ? RicettaButton(
+                          utente: _actualUser,
+                          ricette: _foundRecepies,
+                        )
+                      : _hasSearched
+                          ? buildText("Nessun risultato")
+                          : buildText("Clicca sulla lente di ingrandimento"),
             )));
   }
-  
-  Widget buildText(String s)
-  {
+
+  Widget buildText(String s) {
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
     return Container(
@@ -121,7 +122,8 @@ class _SearchScreenState extends State<SearchScreen> {
             child: Text(
               s,
               textAlign: TextAlign.center,
-              style: TextStyle(color: CustomColors.gray, fontSize: width*(.05)),
+              style:
+                  TextStyle(color: CustomColors.gray, fontSize: width * (.05)),
             )));
   }
 }

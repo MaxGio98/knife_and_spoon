@@ -8,7 +8,6 @@ import 'package:knife_and_spoon/Pages/home_screen.dart';
 import 'package:knife_and_spoon/Pages/sign_in_screen.dart';
 import 'package:knife_and_spoon/Pages/username_insert_screen.dart';
 
-
 class Authentication {
   static Future initializeFirebase({
     @required BuildContext context,

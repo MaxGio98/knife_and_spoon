@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:knife_and_spoon/Assets/custom_colors.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-Widget buildWarningPermissions(BuildContext context)
-{
+Widget buildWarningPermissions(BuildContext context) {
   return AlertDialog(
     backgroundColor: CustomColors.white,
     title: Text(
@@ -40,8 +39,6 @@ Widget buildWarningPermissions(BuildContext context)
           _openPermissionSettings(context);
         },
       ),
-
-
     ],
   );
 }

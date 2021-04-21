@@ -29,10 +29,9 @@ class _InsertUsernameScreenState extends State<InsertUsernameScreen> {
     super.initState();
   }
 
-
   @override
   void setState(VoidCallback fn) {
-    if(mounted) {
+    if (mounted) {
       super.setState(fn);
     }
   }
@@ -56,106 +55,118 @@ class _InsertUsernameScreenState extends State<InsertUsernameScreen> {
 
   String imageData;
   bool dataLoaded = false;
-  bool check=false;
+  bool check = false;
 
   final usernameController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    var width=MediaQuery.of(context).size.width;
-    var height=MediaQuery.of(context).size.height;
+    var width = MediaQuery.of(context).size.width;
+    var height = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: CustomColors.red,
       body: SingleChildScrollView(
         child: ConstrainedBox(
-          constraints: BoxConstraints.tightFor(height: MediaQueryData.fromWindow(window).size.height),
-          child: InkWell(
-            child: Stack(
-              fit: StackFit.expand,
-              children: <Widget>[
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    Expanded(
-                      flex: 7,
-                      child: Container(
-                          child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[buildImage(context)],
-                      )),
-                    ),
-                    Expanded(
-                        flex: 6,
-                        child: Padding(
-                          padding: EdgeInsets.only(top:width*(0.05),left: width*(0.05),right: width*(0.05)),
-                          child: Column(
-                            children: <Widget>[
-                              Text(
-                                'Ciao ' + '${_user.displayName}!',
-                                style: TextStyle(
-                                  color: CustomColors.white,
-                                  fontSize: 26,
-                                ),
+          constraints: BoxConstraints.tightFor(
+              height: MediaQueryData.fromWindow(window).size.height),
+          child: Stack(
+            fit: StackFit.expand,
+            children: <Widget>[
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Expanded(
+                    flex: 7,
+                    child: Container(
+                        child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[buildImage(context)],
+                    )),
+                  ),
+                  Expanded(
+                      flex: 6,
+                      child: Padding(
+                        padding: EdgeInsets.only(
+                            top: width * (0.05),
+                            left: width * (0.05),
+                            right: width * (0.05)),
+                        child: Column(
+                          children: <Widget>[
+                            Text(
+                              'Ciao ' + '${_user.displayName}!',
+                              style: TextStyle(
+                                color: CustomColors.white,
+                                fontSize: 26,
                               ),
-                              Padding(
-                                padding: EdgeInsets.only(top: width*(0.05)),
-                                child: TextField(
-                                  cursorColor: CustomColors.white,
-                                  decoration: InputDecoration(
-                                      counterStyle:
-                                          TextStyle(color: CustomColors.silver),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderSide:
-                                            BorderSide(color: CustomColors.silver),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(color: Colors.white),
-                                      ),
-                                      hintText: "Inserisci qui il tuo username",
-                                      hintStyle: TextStyle(color: CustomColors.silver)),
-                                  controller: usernameController,
-                                  maxLength: 20,
-                                  style: TextStyle(color: CustomColors.white),
-                                  onSubmitted: (value){
-                                    checkValue();
-                                  },
-                                ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(top: width * (0.05)),
+                              child: TextField(
+                                cursorColor: CustomColors.white,
+                                decoration: InputDecoration(
+                                    counterStyle:
+                                        TextStyle(color: CustomColors.silver),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: CustomColors.silver),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide:
+                                          BorderSide(color: Colors.white),
+                                    ),
+                                    hintText: "Inserisci qui il tuo username",
+                                    hintStyle:
+                                        TextStyle(color: CustomColors.silver)),
+                                controller: usernameController,
+                                maxLength: 20,
+                                style: TextStyle(color: CustomColors.white),
+                                onSubmitted: (value) {
+                                  checkValue();
+                                },
                               ),
-                              AnimatedSwitcher(
-                                duration: Duration(milliseconds: 250),
-                                child:check?CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.white),): SizedBox(
-                                  width: width*(0.75),
-                                  height: height*(0.075),
-                                  child: OutlinedButton(
-                                    style: ButtonStyle(
-                                      backgroundColor: MaterialStateProperty.all(CustomColors.white),
-                                      shape: MaterialStateProperty.all(
-                                        RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(40),
+                            ),
+                            AnimatedSwitcher(
+                              duration: Duration(milliseconds: 250),
+                              child: check
+                                  ? CircularProgressIndicator(
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                          Colors.white),
+                                    )
+                                  : SizedBox(
+                                      width: width * (0.75),
+                                      height: height * (0.075),
+                                      child: OutlinedButton(
+                                        style: ButtonStyle(
+                                          backgroundColor:
+                                              MaterialStateProperty.all(
+                                                  CustomColors.white),
+                                          shape: MaterialStateProperty.all(
+                                            RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(40),
+                                            ),
+                                          ),
+                                        ),
+                                        onPressed: () async {
+                                          checkValue();
+                                        },
+                                        child: Text(
+                                          'Registrami!',
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.w600,
+                                          ),
                                         ),
                                       ),
                                     ),
-                                    onPressed: () async {
-                                      checkValue();
-                                    },
-                                    child: Text(
-                                      'Registrami!',
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        )),
-                  ],
-                ),
-              ],
-            ),
+                            ),
+                          ],
+                        ),
+                      )),
+                ],
+              ),
+            ],
           ),
         ),
       ),
@@ -177,15 +188,13 @@ class _InsertUsernameScreenState extends State<InsertUsernameScreen> {
     }
   }
 
-  void checkValue() async
-  {
+  void checkValue() async {
     setState(() {
-      check=true;
+      check = true;
     });
-    await checkUsername(usernameController.text, context,
-        _user, imageData);
+    await checkUsername(usernameController.text, context, _user, imageData);
     setState(() {
-      check=false;
+      check = false;
     });
   }
 }

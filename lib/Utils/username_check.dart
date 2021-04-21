@@ -11,7 +11,6 @@ import 'package:knife_and_spoon/Pages/home_screen.dart';
 import 'package:knife_and_spoon/Widgets/custom_alert_dialog.dart';
 import 'package:uuid/uuid.dart';
 
-
 Future<void> checkUsername(String newUsername, BuildContext context,
     User actualUser, String imageData) async {
   if (newUsername.trim().length < 5) {
@@ -19,7 +18,8 @@ Future<void> checkUsername(String newUsername, BuildContext context,
       context: context,
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
-        return buildCustomAlertOKDialog(context, "Attenzione", "Per favore utilizza uno username con almeno 5 caratteri.");
+        return buildCustomAlertOKDialog(context, "Attenzione",
+            "Per favore utilizza uno username con almeno 5 caratteri.");
       },
     );
   } else {
@@ -34,11 +34,12 @@ Future<void> checkUsername(String newUsername, BuildContext context,
           context: context,
           barrierDismissible: false, // user must tap button!
           builder: (BuildContext context) {
-            return buildCustomAlertOKDialog(context, "Attenzione", "Questo username è già in uso.");
+            return buildCustomAlertOKDialog(
+                context, "Attenzione", "Questo username è già in uso.");
           },
         );
       } else {
-        var uuid=Uuid().v4();
+        var uuid = Uuid().v4();
         List<String> preferiti = [];
         Map<String, Object> user = new HashMap();
         user["Mail"] = actualUser.email;
@@ -60,10 +61,8 @@ Future<void> checkUsername(String newUsername, BuildContext context,
                 context,
                 MaterialPageRoute(
                     builder: (BuildContext context) => HomeScreen()));
-          }).catchError((error) {
-          });
-        }).catchError((error) {
-        });
+          }).catchError((error) {});
+        }).catchError((error) {});
 
         //Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) => HomeScreen()));
 

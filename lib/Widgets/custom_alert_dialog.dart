@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:knife_and_spoon/Assets/custom_colors.dart';
 
-Widget buildCustomAlertOKDialog(BuildContext context,String topText,String message)
-{
+Widget buildCustomAlertOKDialog(
+    BuildContext context, String topText, String message) {
   return AlertDialog(
     backgroundColor: CustomColors.white,
     title: Text(

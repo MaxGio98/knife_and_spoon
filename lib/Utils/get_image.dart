@@ -6,7 +6,8 @@ File _image;
 final picker = ImagePicker();
 
 Future<File> getImageCamera() async {
-  final pickedFile = await picker.getImage(source: ImageSource.camera,imageQuality: 10);
+  final pickedFile =
+      await picker.getImage(source: ImageSource.camera, imageQuality: 10);
   if (pickedFile != null) {
     _image = File(pickedFile.path);
   }
@@ -14,7 +15,8 @@ Future<File> getImageCamera() async {
 }
 
 Future<File> getImageGallery() async {
-  final pickedFile = await picker.getImage(source: ImageSource.gallery,imageQuality: 10);
+  final pickedFile =
+      await picker.getImage(source: ImageSource.gallery, imageQuality: 10);
   if (pickedFile != null) {
     _image = File(pickedFile.path);
   }

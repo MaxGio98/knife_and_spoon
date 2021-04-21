@@ -217,32 +217,35 @@ class _RicettaShowState extends State<RicettaShow> {
         body: ListView(
           children: [
             Padding(
-              padding: EdgeInsets.all(width*(0.04)),
+              padding: EdgeInsets.all(width * (0.04)),
               child: Column(
                 children: [
                   Row(
                     children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(width * 0.175),
-                        child: Image.network(
-                          publisherImageURL,
-                          fit: BoxFit.cover,
-                          height: width * (0.175),
-                          width: width * (0.175),
-                          loadingBuilder: (BuildContext context, Widget child,
-                              ImageChunkEvent loadingProgress) {
-                            if (loadingProgress == null) return child;
-                            return Center(
-                              child: CircularProgressIndicator(
-                                value: loadingProgress.expectedTotalBytes != null
-                                    ? loadingProgress.cumulativeBytesLoaded /
-                                    loadingProgress.expectedTotalBytes
-                                    : null,
-                                valueColor: new AlwaysStoppedAnimation<Color>(
-                                    CustomColors.red),
-                              ),
-                            );
-                          },
+                      Container(
+                        height: width * (0.175),
+                        width: width * (0.175),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(width * 0.175),
+                          child: Image.network(
+                            publisherImageURL,
+                            fit: BoxFit.cover,
+                            loadingBuilder: (BuildContext context, Widget child,
+                                ImageChunkEvent loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Center(
+                                child: CircularProgressIndicator(
+                                  value: loadingProgress.expectedTotalBytes !=
+                                          null
+                                      ? loadingProgress.cumulativeBytesLoaded /
+                                          loadingProgress.expectedTotalBytes
+                                      : null,
+                                  valueColor: new AlwaysStoppedAnimation<Color>(
+                                      CustomColors.red),
+                                ),
+                              );
+                            },
+                          ),
                         ),
                       ),
                       Padding(
@@ -306,7 +309,9 @@ class _RicettaShowState extends State<RicettaShow> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                _ricetta.tempo + " minut" + _returnCorrectMinute(),
+                                _ricetta.tempo +
+                                    " minut" +
+                                    _returnCorrectMinute(),
                                 style: TextStyle(fontSize: width * (0.06)),
                               )
                             ],
@@ -363,19 +368,29 @@ class _RicettaShowState extends State<RicettaShow> {
                                   shrinkWrap: true,
                                   itemBuilder: (context, i) {
                                     return Padding(
-                                      padding: EdgeInsets.only(top: height*(0.007)),
+                                      padding: EdgeInsets.only(
+                                          top: height * (0.007)),
                                       child: Row(
                                         crossAxisAlignment:
-                                        CrossAxisAlignment.center,
+                                            CrossAxisAlignment.center,
                                         children: [
-                                          Text("\u2022 ",style: TextStyle(color: CustomColors.red, fontSize: width*(0.1)),),
+                                          Text(
+                                            "\u2022 ",
+                                            style: TextStyle(
+                                                color: CustomColors.red,
+                                                fontSize: width * (0.1)),
+                                          ),
                                           Expanded(
-                                            child: Text(_ricetta.ingredienti[i]["Nome"]
-                                                .toString() +
-                                                " " +
-                                                _returnCorrectQuant(i) +
-                                                " " +
-                                                _returnCorrectUM(i),style: TextStyle(fontSize: width*(0.06)),),
+                                            child: Text(
+                                              _ricetta.ingredienti[i]["Nome"]
+                                                      .toString() +
+                                                  " " +
+                                                  _returnCorrectQuant(i) +
+                                                  " " +
+                                                  _returnCorrectUM(i),
+                                              style: TextStyle(
+                                                  fontSize: width * (0.06)),
+                                            ),
                                           ),
                                         ],
                                       ),
@@ -411,12 +426,22 @@ class _RicettaShowState extends State<RicettaShow> {
                                   shrinkWrap: true,
                                   itemBuilder: (context, i) {
                                     return Padding(
-                                      padding: EdgeInsets.only(bottom: height*(0.01)),
+                                      padding: EdgeInsets.only(
+                                          bottom: height * (0.01)),
                                       child: Row(
                                         children: [
-                                          Text("\u2022 ",style: TextStyle(color: CustomColors.red, fontSize: width*(0.2)),),
+                                          Text(
+                                            "\u2022 ",
+                                            style: TextStyle(
+                                                color: CustomColors.red,
+                                                fontSize: width * (0.2)),
+                                          ),
                                           Expanded(
-                                            child: Text(_ricetta.steps[i].toString(),style: TextStyle(fontSize: width*(0.06)),),
+                                            child: Text(
+                                              _ricetta.steps[i].toString(),
+                                              style: TextStyle(
+                                                  fontSize: width * (0.06)),
+                                            ),
                                           ),
                                         ],
                                       ),
@@ -431,7 +456,6 @@ class _RicettaShowState extends State<RicettaShow> {
                 ],
               ),
             ),
-
           ],
         ),
       ),
