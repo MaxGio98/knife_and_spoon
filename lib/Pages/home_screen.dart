@@ -11,6 +11,7 @@ import 'package:knife_and_spoon/Assets/custom_colors.dart';
 import 'package:knife_and_spoon/Models/ricetta.dart';
 import 'package:knife_and_spoon/Models/utente.dart';
 import 'package:knife_and_spoon/Pages/favorite_screen.dart';
+import 'package:knife_and_spoon/Pages/insert_ricetta_screen.dart';
 import 'package:knife_and_spoon/Pages/ricetta_show_screen.dart';
 import 'package:knife_and_spoon/Pages/search_ricetta_screen.dart';
 import 'package:knife_and_spoon/Pages/settings_screen.dart';
@@ -175,7 +176,14 @@ class _HomeScreenState extends State<HomeScreen>
               label: 'Aggiungi una ricetta',
               labelStyle: TextStyle(fontSize: 18.0, color: CustomColors.white),
               labelBackgroundColor: CustomColors.red,
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (BuildContext context) => InsertRicettaScreen(
+                          utente: _actualUser,
+                        )));
+              },
             ),
             SpeedDialChild(
               child: Icon(

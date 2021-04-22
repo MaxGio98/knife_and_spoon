@@ -14,6 +14,7 @@ class StartingPoint extends StatelessWidget {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       systemNavigationBarColor: CustomColors.red,
       statusBarColor: CustomColors.red,
+      statusBarIconBrightness: Brightness.light
     ));
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     return MaterialApp(

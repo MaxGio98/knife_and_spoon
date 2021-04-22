@@ -148,6 +148,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       onPressed: () async {
                         EasyPermissionValidator permissionValidatorStorage =
                             EasyPermissionValidator(
+                              appName: "",
                           context: context,
                           customDialog: buildWarningPermissions(context),
                         );
@@ -156,6 +157,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         if (resultStorage) {
                           EasyPermissionValidator permissionValidatorCamera =
                               EasyPermissionValidator(
+                                appName: "",
                             context: context,
                             customDialog: buildWarningPermissions(context),
                           );
