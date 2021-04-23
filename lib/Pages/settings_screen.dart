@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:knife_and_spoon/Assets/custom_colors.dart';
 import 'package:knife_and_spoon/Models/utente.dart';
+import 'package:knife_and_spoon/Pages/approve_ricetta_screen.dart';
 import 'package:knife_and_spoon/Pages/sign_in_screen.dart';
 import 'package:knife_and_spoon/Pages/username_change_screen.dart';
 import 'package:knife_and_spoon/Utils/authentication.dart';
@@ -148,7 +149,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       onPressed: () async {
                         EasyPermissionValidator permissionValidatorStorage =
                             EasyPermissionValidator(
-                              appName: "",
+                          appName: "",
                           context: context,
                           customDialog: buildWarningPermissions(context),
                         );
@@ -157,7 +158,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         if (resultStorage) {
                           EasyPermissionValidator permissionValidatorCamera =
                               EasyPermissionValidator(
-                                appName: "",
+                            appName: "",
                             context: context,
                             customDialog: buildWarningPermissions(context),
                           );
@@ -217,6 +218,45 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                 ),
               ),
+              _actualUser.isAdmin
+                  ? Padding(
+                      padding: EdgeInsets.only(top: height * 0.015),
+                      child: Center(
+                        child: SizedBox(
+                          width: width * (0.75),
+                          height: height * (0.075),
+                          child: OutlinedButton(
+                            style: ButtonStyle(
+                              backgroundColor:
+                                  MaterialStateProperty.all(CustomColors.red),
+                              shape: MaterialStateProperty.all(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(40),
+                                ),
+                              ),
+                            ),
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (BuildContext context) =>
+                                          ApproveRicettaScreen(
+                                            utente: _actualUser,
+                                          )));
+                            },
+                            child: Text(
+                              'Approva le ricette',
+                              style: TextStyle(
+                                fontSize: 20,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
+                  : SizedBox(),
             ],
           ),
           Padding(

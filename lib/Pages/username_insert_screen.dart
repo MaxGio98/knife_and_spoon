@@ -106,10 +106,10 @@ class _InsertUsernameScreenState extends State<InsertUsernameScreen> {
                                 decoration: InputDecoration(
                                     counterStyle:
                                         TextStyle(color: CustomColors.silver),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                            color: CustomColors.silver),
-                                      ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: CustomColors.silver),
+                                    ),
                                     focusedBorder: OutlineInputBorder(
                                       borderSide:
                                           BorderSide(color: Colors.white),

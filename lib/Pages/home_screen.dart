@@ -181,8 +181,8 @@ class _HomeScreenState extends State<HomeScreen>
                     context,
                     MaterialPageRoute(
                         builder: (BuildContext context) => InsertRicettaScreen(
-                          utente: _actualUser,
-                        )));
+                              utente: _actualUser,
+                            )));
               },
             ),
             SpeedDialChild(

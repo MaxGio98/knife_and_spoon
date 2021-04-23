@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:knife_and_spoon/Assets/custom_colors.dart';
 import 'package:knife_and_spoon/Models/ricetta.dart';
 import 'package:knife_and_spoon/Models/utente.dart';
+import 'package:knife_and_spoon/Widgets/custom_alert_dialog.dart';
 
 class RicettaShow extends StatefulWidget {
   const RicettaShow(
@@ -28,13 +30,14 @@ class _RicettaShowState extends State<RicettaShow> {
       "https://firebasestorage.googleapis.com/v0/b/knifeandspoon-3ac35.appspot.com/o/pic.png?alt=media&token=522b1b24-2f4f-4d16-bb9c-521cc422f1c2";
   String publisherName = "";
   String svgPath = "/assets/secondo.svg";
+  bool errorLoading = false;
 
   @override
   void initState() {
     _actualUser = widget._utente;
     _ricetta = widget._ricetta;
     setSvg();
-    loadFavorite();
+    loadFab();
     _loadPublisher();
   }
 
@@ -59,6 +62,12 @@ class _RicettaShowState extends State<RicettaShow> {
       setState(() {
         svgPath = "assets/dolce.svg";
       });
+    }
+  }
+
+  void loadFab() {
+    if (!_actualUser.isAdmin && _ricetta.isApproved) {
+      loadFavorite();
     }
   }
 
@@ -157,20 +166,99 @@ class _RicettaShowState extends State<RicettaShow> {
     return correctForm;
   }
 
+  void approveRicetta() async {
+    await FirebaseFirestore.instance
+        .collection("Ricette")
+        .doc(_ricetta.id)
+        .update({"isApproved": true}).onError((error, stackTrace) {
+      errorLoading = true;
+    });
+    if (!errorLoading) {
+      Navigator.pop(context);
+      showDialog<void>(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return buildCustomAlertOKDialog(
+                context, "Successo", "Ricetta approvata.");
+          });
+    } else {
+      Navigator.pop(context);
+      showDialog<void>(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            Navigator.of(context).pop();
+            return buildCustomAlertOKDialog(
+                context, "Errore", "Si è verificato un problema.");
+          });
+    }
+  }
+
+  void removeRicetta() async {
+    await FirebaseStorage.instance
+        .refFromURL(_ricetta.thumbnail)
+        .delete()
+        .then((value) async {
+      await FirebaseFirestore.instance
+          .collection("Ricette")
+          .doc(_ricetta.id)
+          .delete()
+          .onError((error, stackTrace) {
+        errorLoading = true;
+      });
+    }).onError((error, stackTrace) {
+      errorLoading = true;
+    });
+    if (!errorLoading) {
+      Navigator.pop(context);
+      showDialog<void>(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return buildCustomAlertOKDialog(
+                context, "Successo", "Ricetta eliminata.");
+          });
+    } else {
+      Navigator.pop(context);
+      showDialog<void>(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            Navigator.of(context).pop();
+            return buildCustomAlertOKDialog(
+                context, "Errore", "Si è verificato un problema.");
+          });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
     return SafeArea(
         child: Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _favoriteManagement();
-          snackBarMessage();
-        },
-        backgroundColor: CustomColors.red,
-        child: favIcon,
-      ),
+      floatingActionButton: (_actualUser.isAdmin && !_ricetta.isApproved)
+          ? FloatingActionButton.extended(
+              onPressed: () {
+                showDialog<void>(
+                    context: context,
+                    barrierDismissible: true,
+                    builder: (BuildContext context) {
+                      return buildApproveOrNotDialog();
+                    });
+              },
+              label: Text("Approvazione"),
+              icon: Icon(Icons.help_outline),
+            )
+          : FloatingActionButton(
+              onPressed: () {
+                _favoriteManagement();
+                snackBarMessage();
+              },
+              backgroundColor: CustomColors.red,
+              child: favIcon,
+            ),
       body: NestedScrollView(
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           return <Widget>[
@@ -470,5 +558,47 @@ class _RicettaShowState extends State<RicettaShow> {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Aggiunto ai preferiti")));
     }
+  }
+
+  Widget buildApproveOrNotDialog() {
+    return AlertDialog(
+      backgroundColor: CustomColors.white,
+      title: Text(
+        "Approvazione",
+        style: TextStyle(color: Colors.black),
+      ),
+      content: SingleChildScrollView(
+        child: ListBody(
+          children: <Widget>[
+            Text(
+              "Vuoi approvare questa ricetta?",
+              style: TextStyle(color: Colors.black),
+            ),
+          ],
+        ),
+      ),
+      actions: <Widget>[
+        TextButton(
+          child: Text(
+            'No',
+            style: TextStyle(color: CustomColors.red),
+          ),
+          onPressed: () {
+            Navigator.of(context).pop();
+            removeRicetta();
+          },
+        ),
+        TextButton(
+          child: Text(
+            'Si',
+            style: TextStyle(color: CustomColors.red),
+          ),
+          onPressed: () {
+            Navigator.of(context).pop();
+            approveRicetta();
+          },
+        ),
+      ],
+    );
   }
 }

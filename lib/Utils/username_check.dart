@@ -6,7 +6,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:knife_and_spoon/Assets/custom_colors.dart';
 import 'package:knife_and_spoon/Pages/home_screen.dart';
 import 'package:knife_and_spoon/Widgets/custom_alert_dialog.dart';
 import 'package:uuid/uuid.dart';
