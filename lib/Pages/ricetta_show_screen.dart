@@ -66,7 +66,7 @@ class _RicettaShowState extends State<RicettaShow> {
   }
 
   void loadFab() {
-    if (!_actualUser.isAdmin && _ricetta.isApproved) {
+    if (_ricetta.isApproved) {
       loadFavorite();
     }
   }
