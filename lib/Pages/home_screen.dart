@@ -33,6 +33,8 @@ class _HomeScreenState extends State<HomeScreen>
   bool _userLoaded = false;
   bool _lastTenRicetteLoaded = false;
   AnimationController rotationController;
+  List<String>_categorie=["Antipasto","Primo","Secondo","Contorno","Dolce"];
+  List<bool> _isChecked=[false,false,false,false,false];
 
   _HomeScreenState() {
     loadActualUser();
@@ -75,6 +77,7 @@ class _HomeScreenState extends State<HomeScreen>
 
   void loadTenRecepies() {
     _tenRicette.clear();
+    _currentIndex = 0;
     CollectionReference recipesCollection =
         FirebaseFirestore.instance.collection("Ricette");
     recipesCollection
@@ -83,6 +86,37 @@ class _HomeScreenState extends State<HomeScreen>
         .get()
         .then((QuerySnapshot querySnapshot) async {
       //load user data
+      setState(() {
+        for (int i = 0; i < querySnapshot.docs.length; i++) {
+          Ricetta ricetta = new Ricetta(
+              querySnapshot.docs[i].id,
+              querySnapshot.docs[i].get("Autore"),
+              querySnapshot.docs[i].get("Thumbnail"),
+              querySnapshot.docs[i].get("Titolo"),
+              querySnapshot.docs[i].get("NumeroPersone"),
+              querySnapshot.docs[i].get("TempoPreparazione"),
+              List<Map<String, dynamic>>.from(
+                  querySnapshot.docs[i].get("Ingredienti")),
+              List<String>.from(querySnapshot.docs[i].get("Passaggi")),
+              querySnapshot.docs[i].get("isApproved"),
+              querySnapshot.docs[i].get("Timestamp"),
+              querySnapshot.docs[i].get("Categoria"));
+          _tenRicette.add(ricetta);
+        }
+      });
+    });
+  }
+  void loadFilteredRicette(String categoria)
+  {
+    _tenRicette.clear();
+    _currentIndex = 0;
+    CollectionReference recipesCollection =
+    FirebaseFirestore.instance.collection("Ricette");
+    recipesCollection
+        .limit(10)
+        .where("isApproved", isEqualTo: true).where("Categoria",isEqualTo: categoria)
+        .get()
+        .then((QuerySnapshot querySnapshot) async {
       setState(() {
         for (int i = 0; i < querySnapshot.docs.length; i++) {
           Ricetta ricetta = new Ricetta(
@@ -207,7 +241,9 @@ class _HomeScreenState extends State<HomeScreen>
                         context: context,
                         barrierDismissible: true,
                         builder: (BuildContext context) {
-                          return buildAnonymousDialogRegistration(context,);
+                          return buildAnonymousDialogRegistration(
+                            context,
+                          );
                         },
                       );
                     },
@@ -265,7 +301,9 @@ class _HomeScreenState extends State<HomeScreen>
                         context: context,
                         barrierDismissible: true, // user must tap button!
                         builder: (BuildContext context) {
-                          return buildAnonymousDialogRegistration(context,);
+                          return buildAnonymousDialogRegistration(
+                            context,
+                          );
                         },
                       );
                     },
@@ -296,9 +334,16 @@ class _HomeScreenState extends State<HomeScreen>
               RefreshIndicator(
                 color: CustomColors.red,
                 onRefresh: () {
-                  _userLoaded = false;
-                  _lastTenRicetteLoaded = false;
-                  _currentIndex = 0;
+
+                  setState(() {
+                    _userLoaded = false;
+                    _lastTenRicetteLoaded = false;
+                    _currentIndex = 0;
+                    for(int i=0;i<_isChecked.length;i++)
+                      {
+                        _isChecked[i]=false;
+                      }
+                  });
                   loadActualUser();
                   loadTenRecepies();
                   loadLastTenRecepies();
@@ -327,6 +372,88 @@ class _HomeScreenState extends State<HomeScreen>
                                   style: TextStyle(fontSize: width * (.055)),
                                 )
                         ],
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(top:height*.01,bottom: height*.01),
+                      child: Container(
+                        width: width,
+                        height: height * (0.15),
+                        child:
+                          ListView.builder(itemCount: _categorie.length,
+                              scrollDirection: Axis.horizontal,
+                              shrinkWrap: true,
+                              itemBuilder: (context, i){
+                            return InkWell(
+                              child: Container(
+                                width: width * (.425),
+                                child: Stack(
+                                  fit: StackFit.expand,
+                                  children: [
+                                    Padding(
+                                      padding: EdgeInsets.only(left: width * (.01),right: width * (.01)),
+                                      child: Container(
+                                        width: width * (.425),
+                                        height: height * (0.15),
+                                        child: ClipRRect(
+                                            borderRadius: BorderRadius.circular(
+                                                MediaQuery.of(context).size.width * (0.04)),
+                                            child: Image.asset(
+                                              "assets/"+_categorie[i].toLowerCase()+"main.jpg",
+                                              fit: BoxFit.cover,
+                                            )),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.only(bottom: height*(0.01),left: height*.02, right: height*.02),
+                                      child: Align(
+                                          alignment: Alignment.bottomLeft,
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              FittedBox(
+                                                  fit: BoxFit.contain,
+                                                  child: Text(
+                                                    _categorie[i],
+                                                    style: TextStyle(
+                                                        fontSize: MediaQuery.of(context)
+                                                            .size
+                                                            .width *
+                                                            (.055),
+                                                        color: CustomColors.white),
+                                                  )),
+                                              _isChecked[i]?Icon(Icons.check,color: CustomColors.white,):SizedBox()
+
+                                            ],
+                                          )),
+                                    )
+                                  ],
+                                ),
+                              ),
+                              onTap: (){
+                                if(!_isChecked[i])
+                                {
+                                  for(int j=0;j<_isChecked.length;j++)
+                                  {
+                                    _isChecked[j]=false;
+                                  }
+                                  loadFilteredRicette(_categorie[i]);
+                                  setState(() {
+                                    _isChecked[i]=true;
+                                  });
+                                  //metodo
+                                }
+                                else
+                                {
+                                  loadTenRecepies();
+                                  setState(() {
+                                    _isChecked[i]=false;
+                                  });
+                                }
+                              },
+                            );
+
+                              })
                       ),
                     ),
                     CarouselSlider(
@@ -473,7 +600,7 @@ class _HomeScreenState extends State<HomeScreen>
                             children: [
                               CircularProgressIndicator(
                                 valueColor:
-                                    AlwaysStoppedAnimation<Color>(Colors.red),
+                                    AlwaysStoppedAnimation<Color>(CustomColors.red),
                               )
                             ],
                           )
