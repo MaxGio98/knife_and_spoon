@@ -25,12 +25,10 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   Utente _actualUser;
-  String _actualUserActualImg;
 
   @override
   void initState() {
     _actualUser = widget._utente;
-    _actualUserActualImg = _actualUser.immagine;
     super.initState();
   }
 
@@ -110,7 +108,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   width: width * (0.7),
                   child: ClipRRect(
                       borderRadius: BorderRadius.circular(width * (0.7)),
-                      child: Image.network(
+                      child: !(_actualUser.immagine=="")?Image.network(
                         _actualUser.immagine,
                         fit: BoxFit.cover,
                         loadingBuilder: (BuildContext context, Widget child,
@@ -127,97 +125,100 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             ),
                           );
                         },
-                      )),
+                      ):Image.asset("assets/pizza.png",fit: BoxFit.cover,)),
                 ),
               ),
-              Padding(
-                padding: EdgeInsets.only(top: height * 0.10),
-                child: Center(
-                  child: SizedBox(
-                    width: width * (0.75),
-                    height: height * (0.075),
-                    child: OutlinedButton(
-                      style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStateProperty.all(CustomColors.red),
-                        shape: MaterialStateProperty.all(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(40),
+              !(_actualUser.immagine=="")?Column(children: [
+                Padding(
+                  padding: EdgeInsets.only(top: height * 0.10),
+                  child: Center(
+                    child: SizedBox(
+                      width: width * (0.75),
+                      height: height * (0.075),
+                      child: OutlinedButton(
+                        style: ButtonStyle(
+                          backgroundColor:
+                          MaterialStateProperty.all(CustomColors.red),
+                          shape: MaterialStateProperty.all(
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(40),
+                            ),
                           ),
                         ),
-                      ),
-                      onPressed: () async {
-                        EasyPermissionValidator permissionValidatorStorage =
-                            EasyPermissionValidator(
-                          appName: "",
-                          context: context,
-                          customDialog: buildWarningPermissions(context),
-                        );
-                        var resultStorage =
-                            await permissionValidatorStorage.storage();
-                        if (resultStorage) {
-                          EasyPermissionValidator permissionValidatorCamera =
-                              EasyPermissionValidator(
+                        onPressed: () async {
+                          EasyPermissionValidator permissionValidatorStorage =
+                          EasyPermissionValidator(
                             appName: "",
                             context: context,
                             customDialog: buildWarningPermissions(context),
                           );
-                          var resultCamera =
-                              await permissionValidatorCamera.camera();
-                          if (resultCamera) {
-                            _showPicker(context);
+                          var resultStorage =
+                          await permissionValidatorStorage.storage();
+                          if (resultStorage) {
+                            EasyPermissionValidator permissionValidatorCamera =
+                            EasyPermissionValidator(
+                              appName: "",
+                              context: context,
+                              customDialog: buildWarningPermissions(context),
+                            );
+                            var resultCamera =
+                            await permissionValidatorCamera.camera();
+                            if (resultCamera) {
+                              _showPicker(context);
+                            }
                           }
-                        }
-                      },
-                      child: Text(
-                        'Cambia immagine profilo',
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(top: height * 0.015),
-                child: Center(
-                  child: SizedBox(
-                    width: width * (0.75),
-                    height: height * (0.075),
-                    child: OutlinedButton(
-                      style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStateProperty.all(CustomColors.red),
-                        shape: MaterialStateProperty.all(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(40),
+                        },
+                        child: Text(
+                          'Cambia immagine profilo',
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (BuildContext context) =>
-                                    ChangeUsernameScreen(
-                                      utente: _actualUser,
-                                    )));
-                      },
-                      child: Text(
-                        'Cambia username',
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: height * 0.015),
+                  child: Center(
+                    child: SizedBox(
+                      width: width * (0.75),
+                      height: height * (0.075),
+                      child: OutlinedButton(
+                        style: ButtonStyle(
+                          backgroundColor:
+                          MaterialStateProperty.all(CustomColors.red),
+                          shape: MaterialStateProperty.all(
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(40),
+                            ),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (BuildContext context) =>
+                                      ChangeUsernameScreen(
+                                        utente: _actualUser,
+                                      )));
+                        },
+                        child: Text(
+                          'Cambia username',
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
+              ],):SizedBox(),
+
               _actualUser.isAdmin
                   ? Padding(
                       padding: EdgeInsets.only(top: height * 0.015),
@@ -302,7 +303,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
     ));
   }
-
   Route _routeToSignInScreen() {
     return PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) => SignInScreen(),
@@ -312,7 +312,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         var curve = Curves.ease;
 
         var tween =
-            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+        Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
 
         return SlideTransition(
           position: animation.drive(tween),
@@ -321,4 +321,5 @@ class _SettingsScreenState extends State<SettingsScreen> {
       },
     );
   }
+
 }

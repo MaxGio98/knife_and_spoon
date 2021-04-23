@@ -31,6 +31,7 @@ class _RicettaShowState extends State<RicettaShow> {
   String publisherName = "";
   String svgPath = "/assets/secondo.svg";
   bool errorLoading = false;
+  bool anonymous = false;
 
   @override
   void initState() {
@@ -67,7 +68,13 @@ class _RicettaShowState extends State<RicettaShow> {
 
   void loadFab() {
     if (_ricetta.isApproved) {
-      loadFavorite();
+      if (_actualUser.nome != "anon") {
+        loadFavorite();
+      } else {
+        setState(() {
+          anonymous = true;
+        });
+      }
     }
   }
 
@@ -251,14 +258,28 @@ class _RicettaShowState extends State<RicettaShow> {
               label: Text("Approvazione"),
               icon: Icon(Icons.help_outline),
             )
-          : FloatingActionButton(
-              onPressed: () {
-                _favoriteManagement();
-                snackBarMessage();
-              },
-              backgroundColor: CustomColors.red,
-              child: favIcon,
-            ),
+          : !anonymous
+              ? FloatingActionButton(
+                  onPressed: () {
+                    _favoriteManagement();
+                    snackBarMessage();
+                  },
+                  backgroundColor: CustomColors.red,
+                  child: favIcon,
+                )
+              : FloatingActionButton(
+                  onPressed: () {
+                    return showDialog<void>(
+                      context: context,
+                      barrierDismissible: true,
+                      builder: (BuildContext context) {
+                        return buildAnonymousDialogRegistration(context,);
+                      },
+                    );
+                  },
+                  backgroundColor: CustomColors.silver,
+                  child: favIcon,
+                ),
       body: NestedScrollView(
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           return <Widget>[

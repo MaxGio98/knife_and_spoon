@@ -5,7 +5,6 @@ import 'package:knife_and_spoon/Assets/custom_colors.dart';
 import 'package:knife_and_spoon/Models/ricetta.dart';
 import 'package:knife_and_spoon/Models/utente.dart';
 import 'package:knife_and_spoon/Pages/ricetta_show_screen.dart';
-import 'package:knife_and_spoon/Widgets/ricetta_button.dart';
 
 class ApproveRicettaScreen extends StatefulWidget {
   const ApproveRicettaScreen({Key key, @required Utente utente})

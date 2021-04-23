@@ -15,6 +15,7 @@ import 'package:knife_and_spoon/Pages/insert_ricetta_screen.dart';
 import 'package:knife_and_spoon/Pages/ricetta_show_screen.dart';
 import 'package:knife_and_spoon/Pages/search_ricetta_screen.dart';
 import 'package:knife_and_spoon/Pages/settings_screen.dart';
+import 'package:knife_and_spoon/Widgets/custom_alert_dialog.dart';
 
 import 'package:knife_and_spoon/Widgets/ricetta_button.dart';
 
@@ -66,6 +67,9 @@ class _HomeScreenState extends State<HomeScreen>
           _userLoaded = true;
         });
       });
+    } else {
+      _actualUser.nome = "anon";
+      _userLoaded = true;
     }
   }
 
@@ -167,24 +171,47 @@ class _HomeScreenState extends State<HomeScreen>
           elevation: 8.0,
           shape: CircleBorder(),
           children: [
-            SpeedDialChild(
-              child: Icon(
-                Icons.edit,
-                color: CustomColors.white,
-              ),
-              backgroundColor: CustomColors.red,
-              label: 'Aggiungi una ricetta',
-              labelStyle: TextStyle(fontSize: 18.0, color: CustomColors.white),
-              labelBackgroundColor: CustomColors.red,
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (BuildContext context) => InsertRicettaScreen(
-                              utente: _actualUser,
-                            )));
-              },
-            ),
+            !auth.currentUser.isAnonymous
+                ? SpeedDialChild(
+                    child: Icon(
+                      Icons.edit,
+                      color: CustomColors.white,
+                    ),
+                    backgroundColor: CustomColors.red,
+                    label: 'Aggiungi una ricetta',
+                    labelStyle:
+                        TextStyle(fontSize: 18.0, color: CustomColors.white),
+                    labelBackgroundColor: CustomColors.red,
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (BuildContext context) =>
+                                  InsertRicettaScreen(
+                                    utente: _actualUser,
+                                  )));
+                    },
+                  )
+                : SpeedDialChild(
+                    child: Icon(
+                      Icons.edit,
+                      color: CustomColors.white,
+                    ),
+                    backgroundColor: CustomColors.silver,
+                    label: 'Aggiungi una ricetta',
+                    labelStyle:
+                        TextStyle(fontSize: 18.0, color: CustomColors.white),
+                    labelBackgroundColor: CustomColors.red,
+                    onTap: () {
+                      return showDialog<void>(
+                        context: context,
+                        barrierDismissible: true,
+                        builder: (BuildContext context) {
+                          return buildAnonymousDialogRegistration(context,);
+                        },
+                      );
+                    },
+                  ),
             SpeedDialChild(
               child: Icon(
                 Icons.search,
@@ -203,24 +230,46 @@ class _HomeScreenState extends State<HomeScreen>
                             )));
               },
             ),
-            SpeedDialChild(
-              child: Icon(
-                Icons.favorite,
-                color: CustomColors.white,
-              ),
-              backgroundColor: CustomColors.red,
-              label: 'Preferiti',
-              labelStyle: TextStyle(fontSize: 18.0, color: CustomColors.white),
-              labelBackgroundColor: CustomColors.red,
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (BuildContext context) => FavoriteScreen(
-                              utente: _actualUser,
-                            )));
-              },
-            ),
+            !auth.currentUser.isAnonymous
+                ? SpeedDialChild(
+                    child: Icon(
+                      Icons.favorite,
+                      color: CustomColors.white,
+                    ),
+                    backgroundColor: CustomColors.red,
+                    label: 'Preferiti',
+                    labelStyle:
+                        TextStyle(fontSize: 18.0, color: CustomColors.white),
+                    labelBackgroundColor: CustomColors.red,
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (BuildContext context) => FavoriteScreen(
+                                    utente: _actualUser,
+                                  )));
+                    },
+                  )
+                : SpeedDialChild(
+                    child: Icon(
+                      Icons.favorite,
+                      color: CustomColors.white,
+                    ),
+                    backgroundColor: CustomColors.silver,
+                    label: 'Preferiti',
+                    labelStyle:
+                        TextStyle(fontSize: 18.0, color: CustomColors.white),
+                    labelBackgroundColor: CustomColors.red,
+                    onTap: () {
+                      return showDialog<void>(
+                        context: context,
+                        barrierDismissible: true, // user must tap button!
+                        builder: (BuildContext context) {
+                          return buildAnonymousDialogRegistration(context,);
+                        },
+                      );
+                    },
+                  ),
             SpeedDialChild(
               child: Icon(
                 Icons.settings,
@@ -266,12 +315,17 @@ class _HomeScreenState extends State<HomeScreen>
                           SizedBox(
                             width: width * (0.01),
                           ),
-                          Text(
-                            "Ciao " +
-                                _actualUser.nome +
-                                "!\nBenvenuto su Knife&Spoon.",
-                            style: TextStyle(fontSize: width * (.055)),
-                          )
+                          !auth.currentUser.isAnonymous
+                              ? Text(
+                                  "Ciao " +
+                                      _actualUser.nome +
+                                      "!\nBenvenuto su Knife&Spoon.",
+                                  style: TextStyle(fontSize: width * (.055)),
+                                )
+                              : Text(
+                                  "Ciao cuoco misterioso!\nBenvenuto su Knife&Spoon.",
+                                  style: TextStyle(fontSize: width * (.055)),
+                                )
                         ],
                       ),
                     ),
@@ -444,24 +498,29 @@ class _HomeScreenState extends State<HomeScreen>
         child: ClipRRect(
             borderRadius: BorderRadius.circular(
                 MediaQuery.of(context).size.width * (0.2)),
-            child: Image.network(
-              _actualUser.immagine,
-              fit: BoxFit.cover,
-              loadingBuilder: (BuildContext context, Widget child,
-                  ImageChunkEvent loadingProgress) {
-                if (loadingProgress == null) return child;
-                return Center(
-                  child: CircularProgressIndicator(
-                    value: loadingProgress.expectedTotalBytes != null
-                        ? loadingProgress.cumulativeBytesLoaded /
-                            loadingProgress.expectedTotalBytes
-                        : null,
-                    valueColor:
-                        new AlwaysStoppedAnimation<Color>(CustomColors.red),
-                  ),
-                );
-              },
-            )),
+            child: auth.currentUser.isAnonymous
+                ? Image.asset(
+                    "assets/pizza.png",
+                    fit: BoxFit.cover,
+                  )
+                : Image.network(
+                    _actualUser.immagine,
+                    fit: BoxFit.cover,
+                    loadingBuilder: (BuildContext context, Widget child,
+                        ImageChunkEvent loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Center(
+                        child: CircularProgressIndicator(
+                          value: loadingProgress.expectedTotalBytes != null
+                              ? loadingProgress.cumulativeBytesLoaded /
+                                  loadingProgress.expectedTotalBytes
+                              : null,
+                          valueColor: new AlwaysStoppedAnimation<Color>(
+                              CustomColors.red),
+                        ),
+                      );
+                    },
+                  )),
       );
     } else {
       return Container(

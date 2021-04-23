@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:knife_and_spoon/Assets/custom_colors.dart';
+import 'package:knife_and_spoon/Widgets/anonymous_sign_in.dart';
 import 'package:knife_and_spoon/Widgets/google_sign_in_button.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -39,6 +40,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 ),
               ),
               GoogleSignInButton(),
+              AnonymousSignInButton()
             ],
           ),
         ),
