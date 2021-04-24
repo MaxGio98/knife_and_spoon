@@ -56,18 +56,21 @@ class _ChangeUsernameScreenState extends State<ChangeUsernameScreen> {
                               fit: BoxFit.cover,
                               height: width * (0.7),
                               width: width * (0.7),
-                              loadingBuilder: (BuildContext context, Widget child,
+                              loadingBuilder: (BuildContext context,
+                                  Widget child,
                                   ImageChunkEvent loadingProgress) {
                                 if (loadingProgress == null) return child;
                                 return Center(
                                   child: CircularProgressIndicator(
                                     value: loadingProgress.expectedTotalBytes !=
                                             null
-                                        ? loadingProgress.cumulativeBytesLoaded /
+                                        ? loadingProgress
+                                                .cumulativeBytesLoaded /
                                             loadingProgress.expectedTotalBytes
                                         : null,
-                                    valueColor: new AlwaysStoppedAnimation<Color>(
-                                        CustomColors.red),
+                                    valueColor:
+                                        new AlwaysStoppedAnimation<Color>(
+                                            CustomColors.red),
                                   ),
                                 );
                               },
@@ -106,7 +109,8 @@ class _ChangeUsernameScreenState extends State<ChangeUsernameScreen> {
                                   focusedBorder: OutlineInputBorder(
                                     borderSide: BorderSide(color: Colors.white),
                                   ),
-                                  hintText: "Inserisci qui il tuo nuovo username",
+                                  hintText:
+                                      "Inserisci qui il tuo nuovo username",
                                   hintStyle:
                                       TextStyle(color: CustomColors.silver)),
                               controller: usernameController,

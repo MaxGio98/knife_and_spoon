@@ -6,16 +6,17 @@ import 'package:knife_and_spoon/Pages/ricetta_show_screen.dart';
 
 class RicettaButton extends StatefulWidget {
   const RicettaButton(
-      {Key key, @required Utente utente, @required List<Ricetta> ricette,  Function onCase
-      })
+      {Key key,
+      @required Utente utente,
+      @required List<Ricetta> ricette,
+      Function onCase})
       : _utente = utente,
         _ricette = ricette,
-        onCase=onCase,
+        onCase = onCase,
         super(key: key);
   final Utente _utente;
   final List<Ricetta> _ricette;
   final Function onCase;
-
 
   @override
   _RicettaButtonState createState() => _RicettaButtonState();
@@ -48,27 +49,23 @@ class _RicettaButtonState extends State<RicettaButton> {
               child: Material(
                 child: InkWell(
                   onTap: () {
-                    if(widget.onCase==null)
-                      {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (BuildContext context) => RicettaShow(
-                                  utente: _actualUser,
-                                  ricetta: _ricette[i],
-                                )));
-                      }
-                    else {
+                    if (widget.onCase == null) {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (BuildContext context) => RicettaShow(
-                                utente: _actualUser,
-                                ricetta: _ricette[i],
-                              ))).then((value) => widget.onCase());
+                                    utente: _actualUser,
+                                    ricetta: _ricette[i],
+                                  )));
+                    } else {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (BuildContext context) => RicettaShow(
+                                    utente: _actualUser,
+                                    ricetta: _ricette[i],
+                                  ))).then((value) => widget.onCase());
                     }
-
-
                   },
                   child: Stack(
                     fit: StackFit.expand,

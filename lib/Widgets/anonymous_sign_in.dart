@@ -20,21 +20,20 @@ class _AnonymousSignInButtonState extends State<AnonymousSignInButton> {
             valueColor: AlwaysStoppedAnimation<Color>(CustomColors.white),
           )
         : ElevatedButton(
-            onPressed: () async{
+            onPressed: () async {
               setState(() {
                 _isSigningIn = true;
               });
-              User user =await Authentication.signInAnonymously();
+              User user = await Authentication.signInAnonymously();
               setState(() {
                 _isSigningIn = false;
               });
-              if(user!=null)
-                {
-                  Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (BuildContext context) =>
-                              HomeScreen()));                }
+              if (user != null) {
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (BuildContext context) => HomeScreen()));
+              }
             },
             child: Text(
               "Entra anonimamente",

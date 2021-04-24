@@ -275,7 +275,9 @@ class _RicettaShowState extends State<RicettaShow> {
                         context: context,
                         barrierDismissible: true,
                         builder: (BuildContext context) {
-                          return buildAnonymousDialogRegistration(context,);
+                          return buildAnonymousDialogRegistration(
+                            context,
+                          );
                         },
                       );
                     },
@@ -341,18 +343,21 @@ class _RicettaShowState extends State<RicettaShow> {
                             child: Image.network(
                               publisherImageURL,
                               fit: BoxFit.cover,
-                              loadingBuilder: (BuildContext context, Widget child,
+                              loadingBuilder: (BuildContext context,
+                                  Widget child,
                                   ImageChunkEvent loadingProgress) {
                                 if (loadingProgress == null) return child;
                                 return Center(
                                   child: CircularProgressIndicator(
                                     value: loadingProgress.expectedTotalBytes !=
                                             null
-                                        ? loadingProgress.cumulativeBytesLoaded /
+                                        ? loadingProgress
+                                                .cumulativeBytesLoaded /
                                             loadingProgress.expectedTotalBytes
                                         : null,
-                                    valueColor: new AlwaysStoppedAnimation<Color>(
-                                        CustomColors.red),
+                                    valueColor:
+                                        new AlwaysStoppedAnimation<Color>(
+                                            CustomColors.red),
                                   ),
                                 );
                               },
@@ -465,7 +470,8 @@ class _RicettaShowState extends State<RicettaShow> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Padding(
-                                padding: EdgeInsets.only(bottom: height * (0.02)),
+                                padding:
+                                    EdgeInsets.only(bottom: height * (0.02)),
                                 child: Text(
                                   "Ingredienti",
                                   style: TextStyle(fontSize: width * (0.06)),
@@ -522,7 +528,8 @@ class _RicettaShowState extends State<RicettaShow> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Padding(
-                                padding: EdgeInsets.only(bottom: height * (0.01)),
+                                padding:
+                                    EdgeInsets.only(bottom: height * (0.01)),
                                 child: Text(
                                   "Passaggi",
                                   style: TextStyle(fontSize: width * (0.06)),

@@ -34,8 +34,14 @@ class _HomeScreenState extends State<HomeScreen>
   bool _userLoaded = false;
   bool _lastTenRicetteLoaded = false;
   AnimationController rotationController;
-  List<String>_categorie=["Antipasto","Primo","Secondo","Contorno","Dolce"];
-  List<bool> _isChecked=[false,false,false,false,false];
+  List<String> _categorie = [
+    "Antipasto",
+    "Primo",
+    "Secondo",
+    "Contorno",
+    "Dolce"
+  ];
+  List<bool> _isChecked = [false, false, false, false, false];
 
   _HomeScreenState() {
     loadActualUser();
@@ -107,15 +113,16 @@ class _HomeScreenState extends State<HomeScreen>
       });
     });
   }
-  void loadFilteredRicette(String categoria)
-  {
+
+  void loadFilteredRicette(String categoria) {
     _tenRicette.clear();
     _currentIndex = 0;
     CollectionReference recipesCollection =
-    FirebaseFirestore.instance.collection("Ricette");
+        FirebaseFirestore.instance.collection("Ricette");
     recipesCollection
         .limit(10)
-        .where("isApproved", isEqualTo: true).where("Categoria",isEqualTo: categoria)
+        .where("isApproved", isEqualTo: true)
+        .where("Categoria", isEqualTo: categoria)
         .get()
         .then((QuerySnapshot querySnapshot) async {
       setState(() {
@@ -186,14 +193,13 @@ class _HomeScreenState extends State<HomeScreen>
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
     return CheckConnection(
-      onCase: (){
+      onCase: () {
         setState(() {
           _userLoaded = false;
           _lastTenRicetteLoaded = false;
           _currentIndex = 0;
-          for(int i=0;i<_isChecked.length;i++)
-          {
-            _isChecked[i]=false;
+          for (int i = 0; i < _isChecked.length; i++) {
+            _isChecked[i] = false;
           }
         });
         loadActualUser();
@@ -271,7 +277,8 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
                 backgroundColor: CustomColors.red,
                 label: 'Ricerca',
-                labelStyle: TextStyle(fontSize: 18.0, color: CustomColors.white),
+                labelStyle:
+                    TextStyle(fontSize: 18.0, color: CustomColors.white),
                 labelBackgroundColor: CustomColors.red,
                 onTap: () {
                   Navigator.push(
@@ -297,7 +304,8 @@ class _HomeScreenState extends State<HomeScreen>
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (BuildContext context) => FavoriteScreen(
+                                builder: (BuildContext context) =>
+                                    FavoriteScreen(
                                       utente: _actualUser,
                                     )));
                       },
@@ -332,7 +340,8 @@ class _HomeScreenState extends State<HomeScreen>
                 backgroundColor: CustomColors.red,
                 labelBackgroundColor: CustomColors.red,
                 label: 'Impostazioni',
-                labelStyle: TextStyle(fontSize: 18.0, color: CustomColors.white),
+                labelStyle:
+                    TextStyle(fontSize: 18.0, color: CustomColors.white),
                 onTap: () {
                   Navigator.push(
                       context,
@@ -350,15 +359,13 @@ class _HomeScreenState extends State<HomeScreen>
                 RefreshIndicator(
                   color: CustomColors.red,
                   onRefresh: () {
-
                     setState(() {
                       _userLoaded = false;
                       _lastTenRicetteLoaded = false;
                       _currentIndex = 0;
-                      for(int i=0;i<_isChecked.length;i++)
-                        {
-                          _isChecked[i]=false;
-                        }
+                      for (int i = 0; i < _isChecked.length; i++) {
+                        _isChecked[i] = false;
+                      }
                     });
                     loadActualUser();
                     loadTenRecepies();
@@ -391,93 +398,112 @@ class _HomeScreenState extends State<HomeScreen>
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsets.only(top:height*.01,bottom: height*.01),
+                        padding: EdgeInsets.only(
+                            top: height * .01, bottom: height * .01),
                         child: Container(
-                          width: width,
-                          height: height * (0.15),
-                          child:
-                            ListView.builder(itemCount: _categorie.length,
+                            width: width,
+                            height: height * (0.15),
+                            child: ListView.builder(
+                                itemCount: _categorie.length,
                                 scrollDirection: Axis.horizontal,
                                 shrinkWrap: true,
-                                itemBuilder: (context, i){
-                              return Padding(
-                                padding: EdgeInsets.only(left: width*0.01,right: width*.01),
-                                child: Container(
-                                    width: width * (.425),
-                                    height: height * (0.15),
-                                  decoration: BoxDecoration(
-                                    image: DecorationImage(
-                                      fit: BoxFit.cover,
-                                       image:Image.asset(
-                                        "assets/"+_categorie[i].toLowerCase()+"main.jpg",
-                                        fit: BoxFit.cover,
-                                      ).image,
-                                    ),
-                                    borderRadius: BorderRadius.circular(
-                                        MediaQuery.of(context).size.width * (0.04)),
-                                  ),
-                                  child: Material(
-                                    color: Colors.transparent,
-                                    child: InkWell(
-                                      borderRadius: BorderRadius.circular(
-                                          MediaQuery.of(context).size.width * (0.04)),
-                                      onTap: (){
-                                        if(!_isChecked[i])
-                                        {
-                                          for(int j=0;j<_isChecked.length;j++)
-                                          {
-                                            _isChecked[j]=false;
-                                          }
-                                          loadFilteredRicette(_categorie[i]);
-                                          setState(() {
-                                            _isChecked[i]=true;
-                                          });
-                                        }
-                                        else
-                                        {
-                                          loadTenRecepies();
-                                          setState(() {
-                                            _isChecked[i]=false;
-                                          });
-                                        }
-                                      },
-                                      child: Padding(
-                                        padding: EdgeInsets.only(bottom: height*(0.01),left: height*.02, right: height*.02),
-                                        child: Align(
-                                            alignment: Alignment.bottomLeft,
-                                            child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                              children: [
-                                                FittedBox(
-                                                    fit: BoxFit.contain,
-                                                    child: Text(
-                                                      _categorie[i],
-                                                      style: TextStyle(
-                                                          fontSize: MediaQuery.of(context)
-                                                              .size
-                                                              .width *
-                                                              (.055),
-                                                          color: CustomColors.white),
-                                                    )),
-                                                _isChecked[i]?Icon(Icons.check,color: CustomColors.white,):SizedBox()
-
-                                              ],
-                                            )),
+                                itemBuilder: (context, i) {
+                                  return Padding(
+                                    padding: EdgeInsets.only(
+                                        left: width * 0.01, right: width * .01),
+                                    child: Container(
+                                      width: width * (.425),
+                                      height: height * (0.15),
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                          fit: BoxFit.cover,
+                                          image: Image.asset(
+                                            "assets/" +
+                                                _categorie[i].toLowerCase() +
+                                                "main.jpg",
+                                            fit: BoxFit.cover,
+                                          ).image,
+                                        ),
+                                        borderRadius: BorderRadius.circular(
+                                            MediaQuery.of(context).size.width *
+                                                (0.04)),
+                                      ),
+                                      child: Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
+                                          borderRadius: BorderRadius.circular(
+                                              MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  (0.04)),
+                                          onTap: () {
+                                            if (!_isChecked[i]) {
+                                              for (int j = 0;
+                                                  j < _isChecked.length;
+                                                  j++) {
+                                                _isChecked[j] = false;
+                                              }
+                                              loadFilteredRicette(
+                                                  _categorie[i]);
+                                              setState(() {
+                                                _isChecked[i] = true;
+                                              });
+                                            } else {
+                                              loadTenRecepies();
+                                              setState(() {
+                                                _isChecked[i] = false;
+                                              });
+                                            }
+                                          },
+                                          child: Padding(
+                                            padding: EdgeInsets.only(
+                                                bottom: height * (0.01),
+                                                left: height * .02,
+                                                right: height * .02),
+                                            child: Align(
+                                                alignment: Alignment.bottomLeft,
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    FittedBox(
+                                                        fit: BoxFit.contain,
+                                                        child: Text(
+                                                          _categorie[i],
+                                                          style: TextStyle(
+                                                              fontSize: MediaQuery.of(
+                                                                          context)
+                                                                      .size
+                                                                      .width *
+                                                                  (.055),
+                                                              color:
+                                                                  CustomColors
+                                                                      .white),
+                                                        )),
+                                                    _isChecked[i]
+                                                        ? Icon(
+                                                            Icons.check,
+                                                            color: CustomColors
+                                                                .white,
+                                                          )
+                                                        : SizedBox()
+                                                  ],
+                                                )),
+                                          ),
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ),
-                              );
-
-                                })
-                        ),
+                                  );
+                                })),
                       ),
                       CarouselSlider(
                         options: CarouselOptions(
                           height: height * (.3),
                           autoPlay: true,
                           autoPlayInterval: Duration(seconds: 10),
-                          autoPlayAnimationDuration: Duration(milliseconds: 800),
+                          autoPlayAnimationDuration:
+                              Duration(milliseconds: 800),
                           autoPlayCurve: Curves.fastOutSlowIn,
                           pauseAutoPlayOnTouch: true,
                           aspectRatio: 2.0,
@@ -509,7 +535,8 @@ class _HomeScreenState extends State<HomeScreen>
                                     fit: StackFit.expand,
                                     children: [
                                       ClipRRect(
-                                        borderRadius: BorderRadius.circular(8.0),
+                                        borderRadius:
+                                            BorderRadius.circular(8.0),
                                         child: Image.network(
                                           card.thumbnail,
                                           fit: BoxFit.cover,
@@ -530,7 +557,8 @@ class _HomeScreenState extends State<HomeScreen>
                                                     : null,
                                                 valueColor:
                                                     new AlwaysStoppedAnimation<
-                                                        Color>(CustomColors.red),
+                                                            Color>(
+                                                        CustomColors.red),
                                               ),
                                             );
                                           },
@@ -540,7 +568,8 @@ class _HomeScreenState extends State<HomeScreen>
                                         height: width * 0.1,
                                         width: width,
                                         decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(8),
+                                          borderRadius:
+                                              BorderRadius.circular(8),
                                           gradient: LinearGradient(
                                             begin: Alignment(0, -1),
                                             end: Alignment(0, 0.5),
@@ -566,9 +595,10 @@ class _HomeScreenState extends State<HomeScreen>
                                                     child: Text(
                                                       card.title,
                                                       style: TextStyle(
-                                                          fontSize: width * (.05),
-                                                          color:
-                                                              CustomColors.white),
+                                                          fontSize:
+                                                              width * (.05),
+                                                          color: CustomColors
+                                                              .white),
                                                     ))),
                                           ),
                                         ],
@@ -615,8 +645,8 @@ class _HomeScreenState extends State<HomeScreen>
                           : Column(
                               children: [
                                 CircularProgressIndicator(
-                                  valueColor:
-                                      AlwaysStoppedAnimation<Color>(CustomColors.red),
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      CustomColors.red),
                                 )
                               ],
                             )

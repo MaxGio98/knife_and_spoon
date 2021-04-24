@@ -58,7 +58,7 @@ Widget buildConnectionAlertDialog(Function onPressed) {
           'OK',
           style: TextStyle(color: CustomColors.red),
         ),
-        onPressed:onPressed,
+        onPressed: onPressed,
       ),
     ],
   );

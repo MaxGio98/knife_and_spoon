@@ -117,8 +117,8 @@ class _InsertUsernameScreenState extends State<InsertUsernameScreen> {
                                             BorderSide(color: Colors.white),
                                       ),
                                       hintText: "Inserisci qui il tuo username",
-                                      hintStyle:
-                                          TextStyle(color: CustomColors.silver)),
+                                      hintStyle: TextStyle(
+                                          color: CustomColors.silver)),
                                   controller: usernameController,
                                   maxLength: 20,
                                   style: TextStyle(color: CustomColors.white),
@@ -131,8 +131,9 @@ class _InsertUsernameScreenState extends State<InsertUsernameScreen> {
                                 duration: Duration(milliseconds: 250),
                                 child: check
                                     ? CircularProgressIndicator(
-                                        valueColor: AlwaysStoppedAnimation<Color>(
-                                            Colors.white),
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                                Colors.white),
                                       )
                                     : SizedBox(
                                         width: width * (0.75),

@@ -75,9 +75,12 @@ class _ApproveRicettaScreenState extends State<ApproveRicettaScreen> {
                 child: _isLoading
                     ? buildText("Sto cercando...")
                     : _foundRecepies.length != 0
-                        ? RicettaButton(utente: _actualUser, ricette: _foundRecepies,onCase:(){
-                  searchOnFirebase();
-                })
+                        ? RicettaButton(
+                            utente: _actualUser,
+                            ricette: _foundRecepies,
+                            onCase: () {
+                              searchOnFirebase();
+                            })
                         : buildText("Nessuna ricetta da approvare"),
               ))),
     );

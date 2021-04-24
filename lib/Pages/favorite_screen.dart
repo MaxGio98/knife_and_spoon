@@ -72,10 +72,14 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                 ? buildText("Non hai preferiti. Aggiungine qualcuno!")
                 : _loadedRicette
                     ? SingleChildScrollView(
-                      child: RicettaButton(utente: _actualUser, ricette: ricetteFav,onCase: (){
-              loadFavFromFirebase();
-            },),
-                    )
+                        child: RicettaButton(
+                          utente: _actualUser,
+                          ricette: ricetteFav,
+                          onCase: () {
+                            loadFavFromFirebase();
+                          },
+                        ),
+                      )
                     : buildText("Caricamento in corso...")),
       ),
     );

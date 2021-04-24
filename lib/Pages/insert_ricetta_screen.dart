@@ -1,6 +1,9 @@
+import 'dart:collection';
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_permission_validator/easy_permission_validator.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -10,7 +13,9 @@ import 'package:knife_and_spoon/Assets/custom_colors.dart';
 import 'package:knife_and_spoon/Models/utente.dart';
 import 'package:knife_and_spoon/Utils/check_connection.dart';
 import 'package:knife_and_spoon/Utils/get_image.dart';
+import 'package:knife_and_spoon/Widgets/custom_alert_dialog.dart';
 import 'package:knife_and_spoon/Widgets/permission_warning.dart';
+import 'package:uuid/uuid.dart';
 
 class InsertRicettaScreen extends StatefulWidget {
   const InsertRicettaScreen({Key key, @required Utente utente})
@@ -21,7 +26,8 @@ class InsertRicettaScreen extends StatefulWidget {
   _InsertRicettaScreenState createState() => _InsertRicettaScreenState();
 }
 
-class _InsertRicettaScreenState extends State<InsertRicettaScreen> with SingleTickerProviderStateMixin{
+class _InsertRicettaScreenState extends State<InsertRicettaScreen>
+    with SingleTickerProviderStateMixin {
   Utente _actualUser;
   bool imgInserted = false;
   ScrollController _scrollController;
@@ -31,14 +37,13 @@ class _InsertRicettaScreenState extends State<InsertRicettaScreen> with SingleTi
 
   final timeController = TextEditingController();
   final peopleController = TextEditingController();
-  String dropdownValue = "Antipasto";
+  String dropdownCat = "Antipasto";
 
   List<TextEditingController> nameIngCList = [];
   List<TextEditingController> qtIngCList = [];
   List<String> dropdownValueIng = [];
   List<bool> qbSelected = [];
   List<TextEditingController> passaggiCtList = [];
-
 
   @override
   void initState() {
@@ -66,8 +71,7 @@ class _InsertRicettaScreenState extends State<InsertRicettaScreen> with SingleTi
     super.dispose();
   }
 
-  void loadScrollController()
-  {
+  void loadScrollController() {
     _scrollController = ScrollController();
     _hideFabAnimController = AnimationController(
       vsync: this,
@@ -77,15 +81,15 @@ class _InsertRicettaScreenState extends State<InsertRicettaScreen> with SingleTi
 
     _scrollController.addListener(() {
       switch (_scrollController.position.userScrollDirection) {
-      // Scrolling up - forward the animation (value goes to 1)
+        // Scrolling up - forward the animation (value goes to 1)
         case ScrollDirection.forward:
           _hideFabAnimController.forward();
           break;
-      // Scrolling down - reverse the animation (value goes to 0)
+        // Scrolling down - reverse the animation (value goes to 0)
         case ScrollDirection.reverse:
           _hideFabAnimController.reverse();
           break;
-      // Idle - keep FAB visibility unchanged
+        // Idle - keep FAB visibility unchanged
         case ScrollDirection.idle:
           break;
       }
@@ -107,7 +111,9 @@ class _InsertRicettaScreenState extends State<InsertRicettaScreen> with SingleTi
     setState(() {
       nameIngCList.add(TextEditingController());
       qtIngCList.add(TextEditingController());
-      qtIngCList[(qtIngCList.length-1)].addListener(() {checkQtIng((qtIngCList.length-1));});
+      qtIngCList[(qtIngCList.length - 1)].addListener(() {
+        checkQtIng((qtIngCList.length - 1));
+      });
       dropdownValueIng.add("unità");
       qbSelected.add(false);
     });
@@ -121,35 +127,131 @@ class _InsertRicettaScreenState extends State<InsertRicettaScreen> with SingleTi
     setState(() {});
   }
 
-  void _addNewPassaggio()
-  {
+  void _addNewPassaggio() {
     setState(() {
       passaggiCtList.add(TextEditingController());
     });
   }
 
-  void _removePassaggio(int i)
-  {
+  void _removePassaggio(int i) {
     setState(() {
       passaggiCtList.removeAt(i);
     });
   }
 
-
-  void checkQtIng(int i)
-  {
-    if(qtIngCList[i].text.length>1)
-      {
-        if(qtIngCList[i].text.startsWith("0"))
-        {
-          if(!(qtIngCList[i].text.substring(1,2)=="."))
-          {
-            qtIngCList[i].text="0";
-            qtIngCList[i].selection = TextSelection.fromPosition(TextPosition(offset: qtIngCList[i].text.length));
-          }
+  void checkQtIng(int i) {
+    if (qtIngCList[i].text.length > 1) {
+      if (qtIngCList[i].text.startsWith("0")) {
+        if (!(qtIngCList[i].text.substring(1, 2) == ".")) {
+          qtIngCList[i].text = "0";
+          qtIngCList[i].selection = TextSelection.fromPosition(
+              TextPosition(offset: qtIngCList[i].text.length));
         }
       }
+    }
+  }
 
+  void checkFields() {
+    if (!imgInserted) {
+      showErrorDialog("una foto del piatto");
+      return;
+    }
+    if (titleController.text.trim().isEmpty) {
+      showErrorDialog("il titolo della ricetta");
+      return;
+    }
+    if (timeController.text.isEmpty) {
+      showErrorDialog("il tempo di preparazione");
+      return;
+    }
+    if (peopleController.text.isEmpty) {
+      showErrorDialog("il numero delle persone");
+      return;
+    }
+    if (nameIngCList.isEmpty) {
+      showErrorDialog("almeno un ingrediente");
+      return;
+    } else {
+      for (int i = 0; i < nameIngCList.length; i++) {
+        if (nameIngCList[i].text.trim().isEmpty) {
+          showErrorDialog(
+              "il nome del " + (i + 1).toString() + "° ingrediente");
+          return;
+        }
+        if (qtIngCList[i].text.isEmpty||qtIngCList[i].text=="0") {
+          showErrorDialog(
+              "la quantità del " + (i + 1).toString() + "° ingrediente");
+          return;
+        }
+      }
+    }
+    if (passaggiCtList.isEmpty) {
+      showErrorDialog("almeno un passaggio");
+      return;
+    } else {
+      for (int i = 0; i < passaggiCtList.length; i++) {
+        if (passaggiCtList[i].text.trim().isEmpty) {
+          showErrorDialog(
+              "la descrizione del " + (i + 1).toString() + "° passaggio");
+          return;
+        }
+      }
+    }
+
+    pubblicaRicetta();
+  }
+
+  Future<void> showErrorDialog(String err) {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return buildCustomAlertOKDialog(
+            context, "Attenzione", "Inserisci " + err + ".");
+      },
+    );
+  }
+
+  void pubblicaRicetta()
+  {
+    List<String> passaggi=[];
+    for (int i=0;i<passaggiCtList.length;i++) {
+      passaggi.add(passaggiCtList[i].text);
+    }
+    List<Map> ingredienti=[];
+    for (int i=0;i<nameIngCList.length;i++) {
+      Map<String,String> mapIng=new Map();
+      mapIng["Nome"]=nameIngCList[i].text.trim();
+      mapIng["Quantità"]=qtIngCList[i].text;
+      mapIng["Unità misura"]=dropdownValueIng[i];
+      ingredienti.add(mapIng);
+    }
+    Map<String,dynamic>ricettaToUpload=new HashMap();
+    ricettaToUpload["Autore"]=_actualUser.id;
+    ricettaToUpload["Titolo"]=titleController.text.trim();
+    ricettaToUpload["Categoria"]=dropdownCat;
+    ricettaToUpload["Timestamp"]=FieldValue.serverTimestamp();
+    ricettaToUpload["TempoPreparazione"]=timeController.text;
+    ricettaToUpload["NumeroPersone"]=peopleController.text;
+    ricettaToUpload["Passaggi"]=passaggi;
+    ricettaToUpload["Ingredienti"]=ingredienti;
+    ricettaToUpload["isApproved"]=false;
+    uploadToFirebase(ricettaToUpload);
+  }
+
+  void uploadToFirebase(Map ricetta) async
+  {
+    var uuid = Uuid().v4();
+    Reference ref=FirebaseStorage.instance.ref();
+    Reference img=ref.child(uuid.toString() + ".jpg");
+    await img.putFile(f);
+    await img.getDownloadURL().then((url)
+    {
+      ricetta["Thumbnail"]=url;
+      FirebaseFirestore.instance.collection("Ricette").add(ricetta).then((value) {
+        print("CIAO");
+      });
+    });
   }
 
   @override
@@ -159,16 +261,20 @@ class _InsertRicettaScreenState extends State<InsertRicettaScreen> with SingleTi
     return CheckConnection(
       child: SafeArea(
           child: Scaffold(
-              floatingActionButton: FadeTransition(opacity: _hideFabAnimController,
+              floatingActionButton: FadeTransition(
+                opacity: _hideFabAnimController,
                 child: ScaleTransition(
                   scale: _hideFabAnimController,
                   child: FloatingActionButton.extended(
                     heroTag: "btnPublish",
-                    onPressed: () {},
+                    onPressed: () {
+                      checkFields();
+                    },
                     label: Text("Pubblica"),
                     icon: Icon(Icons.edit),
                   ),
-                ),),
+                ),
+              ),
               body: NestedScrollView(
                 controller: _scrollController,
                 headerSliverBuilder:
@@ -318,9 +424,9 @@ class _InsertRicettaScreenState extends State<InsertRicettaScreen> with SingleTi
                                       FilteringTextInputFormatter.allow(
                                           RegExp("[0-9]"))
                                     ],
-                                    maxLength: 4,
+                                    maxLength: 2,
                                     decoration: InputDecoration(
-                                        hintText: "Numero Persone",
+                                        hintText: "Numero persone",
                                         counterText: ""),
                                   ),
                                 ),
@@ -337,7 +443,7 @@ class _InsertRicettaScreenState extends State<InsertRicettaScreen> with SingleTi
                                 padding: EdgeInsets.only(left: width * (0.05)),
                                 child: DropdownButton<String>(
                                   focusColor: CustomColors.red,
-                                  value: dropdownValue,
+                                  value: dropdownCat,
                                   iconSize: 0,
                                   style: TextStyle(
                                       color: Colors.black,
@@ -348,7 +454,7 @@ class _InsertRicettaScreenState extends State<InsertRicettaScreen> with SingleTi
                                   ),
                                   onChanged: (String newValue) {
                                     setState(() {
-                                      dropdownValue = newValue;
+                                      dropdownCat = newValue;
                                     });
                                   },
                                   items: <String>[
@@ -432,12 +538,12 @@ class _InsertRicettaScreenState extends State<InsertRicettaScreen> with SingleTi
                                   child: OutlinedButton(
                                     style: ButtonStyle(
                                       backgroundColor:
-                                      MaterialStateProperty.all(
-                                          CustomColors.red),
+                                          MaterialStateProperty.all(
+                                              CustomColors.red),
                                       shape: MaterialStateProperty.all(
                                         RoundedRectangleBorder(
                                           borderRadius:
-                                          BorderRadius.circular(40),
+                                              BorderRadius.circular(40),
                                         ),
                                       ),
                                     ),
@@ -512,18 +618,20 @@ class _InsertRicettaScreenState extends State<InsertRicettaScreen> with SingleTi
                             width: width * .05,
                           ),
                           Expanded(
-                            child: !qbSelected[i]?TextFormField(
-                              controller: qtIngCList[i],
-                              keyboardType: TextInputType.number,
-                              inputFormatters: [
-                                FilteringTextInputFormatter.allow(
-                                    RegExp(r"^\d+([.]\d{0,2})?$"))
-                              ],
-                              textAlign: TextAlign.center,
-                              maxLength: 6,
-                              decoration: InputDecoration(
-                                  hintText: "Quantità", counterText: ""),
-                            ):SizedBox(),
+                            child: !qbSelected[i]
+                                ? TextFormField(
+                                    controller: qtIngCList[i],
+                                    keyboardType: TextInputType.number,
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.allow(
+                                          RegExp(r"^\d+([.]\d{0,2})?$"))
+                                    ],
+                                    textAlign: TextAlign.center,
+                                    maxLength: 6,
+                                    decoration: InputDecoration(
+                                        hintText: "Quantità", counterText: ""),
+                                  )
+                                : SizedBox(),
                           ),
                           SizedBox(
                             width: width * .05,
@@ -538,14 +646,13 @@ class _InsertRicettaScreenState extends State<InsertRicettaScreen> with SingleTi
                                   fontSize: width * (0.05)),
                               onChanged: (String newValue) {
                                 if (newValue == "q.b.") {
-                                  qtIngCList[i].text="0";
+                                  qtIngCList[i].text = "0";
                                   qbSelected[i] = true;
                                 } else {
-                                  if(qbSelected[i] == true)
-                                    {
-                                      qbSelected[i] = false;
-                                      qtIngCList[i].text="";
-                                    }
+                                  if (qbSelected[i] == true) {
+                                    qbSelected[i] = false;
+                                    qtIngCList[i].text = "";
+                                  }
                                 }
 
                                 setState(() {
@@ -584,20 +691,21 @@ class _InsertRicettaScreenState extends State<InsertRicettaScreen> with SingleTi
     );
   }
 
-  Widget buildRowPassaggio(int i)
-  {
-    var width=MediaQuery.of(context).size.width;
-    var height=MediaQuery.of(context).size.height;
+  Widget buildRowPassaggio(int i) {
+    var width = MediaQuery.of(context).size.width;
+    var height = MediaQuery.of(context).size.height;
     return Padding(
       padding: EdgeInsets.only(top: height * (0.015)),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          FloatingActionButton(child: Icon(Icons.remove),onPressed: (){
-            _removePassaggio(i);
-          }),
+          FloatingActionButton(
+              child: Icon(Icons.remove),
+              onPressed: () {
+                _removePassaggio(i);
+              }),
           SizedBox(
-            width: width*(0.05),
+            width: width * (0.05),
           ),
           Expanded(
             child: TextFormField(
@@ -609,7 +717,7 @@ class _InsertRicettaScreenState extends State<InsertRicettaScreen> with SingleTi
             ),
           ),
           SizedBox(
-            width: width*(0.05),
+            width: width * (0.05),
           ),
         ],
       ),

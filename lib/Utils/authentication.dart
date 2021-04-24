@@ -15,44 +15,40 @@ class Authentication {
     await Firebase.initializeApp();
     User user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      if(!user.isAnonymous)
-        {
-          CollectionReference usersCollection =
-          FirebaseFirestore.instance.collection("Utenti");
-          usersCollection
-              .where("Mail", isEqualTo: user.email)
-              .get()
-              .then((QuerySnapshot querySnapshot) {
-            //esiste un documento con quella mail, quindi l'utente è entrato almeno una volta
-            if (querySnapshot.docs.isNotEmpty) {
-              if (querySnapshot.docs[0].get("Nome") != null) {
-                //l'utente si è registrato in maniera corretta
-                Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                        builder: (BuildContext context) => HomeScreen()));
-              } else {
-                Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                        builder: (BuildContext context) =>
-                            InsertUsernameScreen(user: user)));
-              }
+      if (!user.isAnonymous) {
+        CollectionReference usersCollection =
+            FirebaseFirestore.instance.collection("Utenti");
+        usersCollection
+            .where("Mail", isEqualTo: user.email)
+            .get()
+            .then((QuerySnapshot querySnapshot) {
+          //esiste un documento con quella mail, quindi l'utente è entrato almeno una volta
+          if (querySnapshot.docs.isNotEmpty) {
+            if (querySnapshot.docs[0].get("Nome") != null) {
+              //l'utente si è registrato in maniera corretta
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (BuildContext context) => HomeScreen()));
             } else {
-              //l'utente entra per la prima volta nell'app
               Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
                       builder: (BuildContext context) =>
                           InsertUsernameScreen(user: user)));
             }
-          });
-        }
-      else{
-        Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-                builder: (BuildContext context) => HomeScreen()));
+          } else {
+            //l'utente entra per la prima volta nell'app
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (BuildContext context) =>
+                        InsertUsernameScreen(user: user)));
+          }
+        });
+      } else {
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (BuildContext context) => HomeScreen()));
       }
     } else {
       Navigator.pushReplacement(context,
@@ -120,12 +116,11 @@ class Authentication {
     }
   }
 
-  static Future<User>signInAnonymously() async
-  {
+  static Future<User> signInAnonymously() async {
     User user;
     FirebaseAuth auth = FirebaseAuth.instance;
     await auth.signInAnonymously().then((value) {
-      user=value.user;
+      user = value.user;
     });
     return user;
   }
