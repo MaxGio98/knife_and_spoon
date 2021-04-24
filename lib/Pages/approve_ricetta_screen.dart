@@ -6,6 +6,7 @@ import 'package:knife_and_spoon/Models/ricetta.dart';
 import 'package:knife_and_spoon/Models/utente.dart';
 import 'package:knife_and_spoon/Pages/ricetta_show_screen.dart';
 import 'package:knife_and_spoon/Utils/check_connection.dart';
+import 'package:knife_and_spoon/Widgets/ricetta_button.dart';
 
 class ApproveRicettaScreen extends StatefulWidget {
   const ApproveRicettaScreen({Key key, @required Utente utente})
@@ -74,7 +75,9 @@ class _ApproveRicettaScreenState extends State<ApproveRicettaScreen> {
                 child: _isLoading
                     ? buildText("Sto cercando...")
                     : _foundRecepies.length != 0
-                        ? buildRicetteToApprove()
+                        ? RicettaButton(utente: _actualUser, ricette: _foundRecepies,onCase:(){
+                  searchOnFirebase();
+                })
                         : buildText("Nessuna ricetta da approvare"),
               ))),
     );
@@ -94,99 +97,5 @@ class _ApproveRicettaScreenState extends State<ApproveRicettaScreen> {
               style:
                   TextStyle(color: CustomColors.gray, fontSize: width * (.05)),
             )));
-  }
-
-  Widget buildRicetteToApprove() {
-    return ListView.builder(
-        itemCount: _foundRecepies.length,
-        physics: const NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
-        itemBuilder: (context, i) {
-          return Container(
-            height: MediaQuery.of(context).size.height * .2,
-            width: MediaQuery.of(context).size.width,
-            child: Padding(
-              padding:
-                  EdgeInsets.all(MediaQuery.of(context).size.width * (.02)),
-              child: Material(
-                child: InkWell(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (BuildContext context) => RicettaShow(
-                                  utente: _actualUser,
-                                  ricetta: _foundRecepies[i],
-                                ))).then((value) => searchOnFirebase());
-                  },
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(8.0),
-                        child: Image.network(
-                          _foundRecepies[i].thumbnail,
-                          fit: BoxFit.cover,
-                          loadingBuilder: (BuildContext context, Widget child,
-                              ImageChunkEvent loadingProgress) {
-                            if (loadingProgress == null) return child;
-                            return Center(
-                              child: CircularProgressIndicator(
-                                value: loadingProgress.expectedTotalBytes !=
-                                        null
-                                    ? loadingProgress.cumulativeBytesLoaded /
-                                        loadingProgress.expectedTotalBytes
-                                    : null,
-                                valueColor: new AlwaysStoppedAnimation<Color>(
-                                    CustomColors.red),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                      Container(
-                        height: MediaQuery.of(context).size.width * 0.1,
-                        width: MediaQuery.of(context).size.width,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          gradient: LinearGradient(
-                            begin: Alignment(0, -1),
-                            end: Alignment(0, 0.5),
-                            colors: [
-                              const Color(0xCC000000).withOpacity(0.1),
-                              const Color(0x00000000),
-                              const Color(0x00000000),
-                              const Color(0xCC000000).withOpacity(0.6),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: Align(
-                                alignment: Alignment.bottomLeft,
-                                child: FittedBox(
-                                    fit: BoxFit.contain,
-                                    child: Text(
-                                      _foundRecepies[i].title,
-                                      style: TextStyle(
-                                          fontSize: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              (.05),
-                                          color: CustomColors.white),
-                                    ))),
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          );
-        });
   }
 }
