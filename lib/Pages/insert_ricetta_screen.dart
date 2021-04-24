@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:easy_permission_validator/easy_permission_validator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:knife_and_spoon/Assets/custom_colors.dart';
@@ -20,24 +21,29 @@ class InsertRicettaScreen extends StatefulWidget {
   _InsertRicettaScreenState createState() => _InsertRicettaScreenState();
 }
 
-class _InsertRicettaScreenState extends State<InsertRicettaScreen> {
+class _InsertRicettaScreenState extends State<InsertRicettaScreen> with SingleTickerProviderStateMixin{
   Utente _actualUser;
   bool imgInserted = false;
   ScrollController _scrollController;
+  AnimationController _hideFabAnimController;
   File f;
   final titleController = TextEditingController();
 
   final timeController = TextEditingController();
   final peopleController = TextEditingController();
   String dropdownValue = "Antipasto";
-  String dropdownValueIng = "unità";
-  List<TextEditingController> nameIngCList=[];
-  List<TextEditingController> qtIngCList=[];
+
+  List<TextEditingController> nameIngCList = [];
+  List<TextEditingController> qtIngCList = [];
+  List<String> dropdownValueIng = [];
+  List<bool> qbSelected = [];
+  List<TextEditingController> passaggiCtList = [];
+
 
   @override
   void initState() {
     _actualUser = widget._utente;
-    _scrollController = new ScrollController();
+    loadScrollController();
     _scrollController.addListener(() => setState(() {}));
     checkTextIntPositive(timeController);
     checkTextIntPositive(peopleController);
@@ -47,14 +53,43 @@ class _InsertRicettaScreenState extends State<InsertRicettaScreen> {
   @override
   void dispose() {
     _scrollController.dispose();
+    _hideFabAnimController.dispose();
     for (var value in nameIngCList) {
       value.dispose();
     }
     for (var value1 in qtIngCList) {
       value1.dispose();
-
+    }
+    for (var value2 in passaggiCtList) {
+      value2.dispose();
     }
     super.dispose();
+  }
+
+  void loadScrollController()
+  {
+    _scrollController = ScrollController();
+    _hideFabAnimController = AnimationController(
+      vsync: this,
+      duration: kThemeAnimationDuration,
+      value: 1, // initially visible
+    );
+
+    _scrollController.addListener(() {
+      switch (_scrollController.position.userScrollDirection) {
+      // Scrolling up - forward the animation (value goes to 1)
+        case ScrollDirection.forward:
+          _hideFabAnimController.forward();
+          break;
+      // Scrolling down - reverse the animation (value goes to 0)
+        case ScrollDirection.reverse:
+          _hideFabAnimController.reverse();
+          break;
+      // Idle - keep FAB visibility unchanged
+        case ScrollDirection.idle:
+          break;
+      }
+    });
   }
 
   void checkTextIntPositive(var controller) {
@@ -72,16 +107,49 @@ class _InsertRicettaScreenState extends State<InsertRicettaScreen> {
     setState(() {
       nameIngCList.add(TextEditingController());
       qtIngCList.add(TextEditingController());
+      qtIngCList[(qtIngCList.length-1)].addListener(() {checkQtIng((qtIngCList.length-1));});
+      dropdownValueIng.add("unità");
+      qbSelected.add(false);
     });
   }
 
-  void _removeIngrediente(int i)
-  {
+  void _removeIngrediente(int i) {
     nameIngCList.removeAt(i);
     qtIngCList.removeAt(i);
-    setState(() {
+    dropdownValueIng.removeAt(i);
+    qbSelected.removeAt(i);
+    setState(() {});
+  }
 
+  void _addNewPassaggio()
+  {
+    setState(() {
+      passaggiCtList.add(TextEditingController());
     });
+  }
+
+  void _removePassaggio(int i)
+  {
+    setState(() {
+      passaggiCtList.removeAt(i);
+    });
+  }
+
+
+  void checkQtIng(int i)
+  {
+    if(qtIngCList[i].text.length>1)
+      {
+        if(qtIngCList[i].text.startsWith("0"))
+        {
+          if(!(qtIngCList[i].text.substring(1,2)=="."))
+          {
+            qtIngCList[i].text="0";
+            qtIngCList[i].selection = TextSelection.fromPosition(TextPosition(offset: qtIngCList[i].text.length));
+          }
+        }
+      }
+
   }
 
   @override
@@ -91,13 +159,18 @@ class _InsertRicettaScreenState extends State<InsertRicettaScreen> {
     return CheckConnection(
       child: SafeArea(
           child: Scaffold(
-              floatingActionButton: FloatingActionButton.extended(
-                heroTag: "btnPublish",
-                onPressed: () {},
-                label: Text("Pubblica"),
-                icon: Icon(Icons.edit),
-              ),
+              floatingActionButton: FadeTransition(opacity: _hideFabAnimController,
+                child: ScaleTransition(
+                  scale: _hideFabAnimController,
+                  child: FloatingActionButton.extended(
+                    heroTag: "btnPublish",
+                    onPressed: () {},
+                    label: Text("Pubblica"),
+                    icon: Icon(Icons.edit),
+                  ),
+                ),),
               body: NestedScrollView(
+                controller: _scrollController,
                 headerSliverBuilder:
                     (BuildContext context, bool innerBoxIsScrolled) {
                   return <Widget>[
@@ -161,7 +234,8 @@ class _InsertRicettaScreenState extends State<InsertRicettaScreen> {
                                 controller: titleController,
                                 maxLength: 30,
                                 decoration: InputDecoration(
-                                    hintText: "Inserisci il titolo della ricetta",
+                                    hintText:
+                                        "Inserisci il titolo della ricetta",
                                     counterText: ""),
                               ),
                             )),
@@ -173,7 +247,8 @@ class _InsertRicettaScreenState extends State<InsertRicettaScreen> {
                                     EasyPermissionValidator(
                                   appName: "",
                                   context: context,
-                                  customDialog: buildWarningPermissions(context),
+                                  customDialog:
+                                      buildWarningPermissions(context),
                                 );
                                 var resultStorage =
                                     await permissionValidatorStorage.storage();
@@ -282,7 +357,8 @@ class _InsertRicettaScreenState extends State<InsertRicettaScreen> {
                                     'Secondo',
                                     'Contorno',
                                     'Dolce'
-                                  ].map<DropdownMenuItem<String>>((String value) {
+                                  ].map<DropdownMenuItem<String>>(
+                                      (String value) {
                                     return DropdownMenuItem<String>(
                                       value: value,
                                       child: Text(value),
@@ -310,11 +386,13 @@ class _InsertRicettaScreenState extends State<InsertRicettaScreen> {
                                   height: height * (0.075),
                                   child: OutlinedButton(
                                     style: ButtonStyle(
-                                      backgroundColor: MaterialStateProperty.all(
-                                          CustomColors.red),
+                                      backgroundColor:
+                                          MaterialStateProperty.all(
+                                              CustomColors.red),
                                       shape: MaterialStateProperty.all(
                                         RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(40),
+                                          borderRadius:
+                                              BorderRadius.circular(40),
                                         ),
                                       ),
                                     ),
@@ -323,6 +401,51 @@ class _InsertRicettaScreenState extends State<InsertRicettaScreen> {
                                     },
                                     child: Text(
                                       'Inserisci un ingrediente',
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        ListView.builder(
+                            itemCount: passaggiCtList.length,
+                            physics: NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemBuilder: (context, i) {
+                              return buildRowPassaggio(i);
+                            }),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(top: height * 0.025),
+                              child: Center(
+                                child: SizedBox(
+                                  width: width * (0.75),
+                                  height: height * (0.075),
+                                  child: OutlinedButton(
+                                    style: ButtonStyle(
+                                      backgroundColor:
+                                      MaterialStateProperty.all(
+                                          CustomColors.red),
+                                      shape: MaterialStateProperty.all(
+                                        RoundedRectangleBorder(
+                                          borderRadius:
+                                          BorderRadius.circular(40),
+                                        ),
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      _addNewPassaggio();
+                                    },
+                                    child: Text(
+                                      'Inserisci un passaggio',
                                       style: TextStyle(
                                         fontSize: 20,
                                         color: Colors.white,
@@ -343,11 +466,9 @@ class _InsertRicettaScreenState extends State<InsertRicettaScreen> {
     );
   }
 
-  Widget buildRowIngrediente(int i)
-  {
+  Widget buildRowIngrediente(int i) {
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
-
     return Column(
       children: [
         Row(
@@ -366,7 +487,7 @@ class _InsertRicettaScreenState extends State<InsertRicettaScreen> {
                       Row(
                         children: [
                           SizedBox(
-                            width: width*.05,
+                            width: width * .05,
                           ),
                           Expanded(
                             child: TextField(
@@ -374,11 +495,12 @@ class _InsertRicettaScreenState extends State<InsertRicettaScreen> {
                               textAlign: TextAlign.center,
                               maxLength: 25,
                               decoration: InputDecoration(
-                                  hintText: "Nome ingrediente", counterText: ""),
+                                  hintText: "Nome ingrediente",
+                                  counterText: ""),
                             ),
                           ),
                           SizedBox(
-                            width: width*.05,
+                            width: width * .05,
                           ),
                         ],
                       ),
@@ -387,35 +509,47 @@ class _InsertRicettaScreenState extends State<InsertRicettaScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           SizedBox(
-                            width: width*.05,
+                            width: width * .05,
                           ),
                           Expanded(
-                            child: TextFormField(
+                            child: !qbSelected[i]?TextFormField(
                               controller: qtIngCList[i],
                               keyboardType: TextInputType.number,
                               inputFormatters: [
                                 FilteringTextInputFormatter.allow(
-                                RegExp(r"^\d+([.]\d{0,2})?$"))
+                                    RegExp(r"^\d+([.]\d{0,2})?$"))
                               ],
                               textAlign: TextAlign.center,
                               maxLength: 6,
                               decoration: InputDecoration(
                                   hintText: "Quantità", counterText: ""),
-                            ),
+                            ):SizedBox(),
                           ),
                           SizedBox(
-                            width: width*.05,
+                            width: width * .05,
                           ),
                           Expanded(
                             child: DropdownButtonFormField<String>(
                               focusColor: CustomColors.red,
-                              value: dropdownValueIng,
+                              value: dropdownValueIng[i],
                               icon: Icon(Icons.arrow_downward),
                               style: TextStyle(
-                                  color: Colors.black, fontSize: width * (0.05)),
+                                  color: Colors.black,
+                                  fontSize: width * (0.05)),
                               onChanged: (String newValue) {
+                                if (newValue == "q.b.") {
+                                  qtIngCList[i].text="0";
+                                  qbSelected[i] = true;
+                                } else {
+                                  if(qbSelected[i] == true)
+                                    {
+                                      qbSelected[i] = false;
+                                      qtIngCList[i].text="";
+                                    }
+                                }
+
                                 setState(() {
-                                  dropdownValueIng = newValue;
+                                  dropdownValueIng[i] = newValue;
                                 });
                               },
                               items: <String>[
@@ -437,7 +571,7 @@ class _InsertRicettaScreenState extends State<InsertRicettaScreen> {
                             ),
                           ),
                           SizedBox(
-                            width: width*.05,
+                            width: width * .05,
                           ),
                         ],
                       ),
@@ -447,6 +581,38 @@ class _InsertRicettaScreenState extends State<InsertRicettaScreen> {
           ],
         )
       ],
+    );
+  }
+
+  Widget buildRowPassaggio(int i)
+  {
+    var width=MediaQuery.of(context).size.width;
+    var height=MediaQuery.of(context).size.height;
+    return Padding(
+      padding: EdgeInsets.only(top: height * (0.015)),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          FloatingActionButton(child: Icon(Icons.remove),onPressed: (){
+            _removePassaggio(i);
+          }),
+          SizedBox(
+            width: width*(0.05),
+          ),
+          Expanded(
+            child: TextFormField(
+              keyboardType: TextInputType.multiline,
+              textAlign: TextAlign.left,
+              maxLines: 4,
+              style: TextStyle(fontSize: width * (0.05)),
+              controller: passaggiCtList[i],
+            ),
+          ),
+          SizedBox(
+            width: width*(0.05),
+          ),
+        ],
+      ),
     );
   }
 
