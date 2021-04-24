@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:knife_and_spoon/Assets/custom_colors.dart';
 import 'package:knife_and_spoon/Pages/sign_in_screen.dart';
 import 'package:knife_and_spoon/Utils/authentication.dart';
+import 'package:knife_and_spoon/Utils/check_connection.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -42,50 +43,52 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     Authentication.initializeFirebase(context: context);
-    return Scaffold(
-      backgroundColor: CustomColors.red,
-      body: Stack(
-        fit: StackFit.expand,
-        children: <Widget>[
-          Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Expanded(
-                flex: 7,
-                child: Container(
-                    child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Image.asset(
-                      'assets/app_logo.png',
-                      height: MediaQuery.of(context).size.height * (0.75),
-                      width: MediaQuery.of(context).size.width * (0.75),
-                    ),
-                  ],
-                )),
-              ),
-              Expanded(
-                flex: 2,
-                child: Column(
-                  children: <Widget>[
-                    CircularProgressIndicator(
-                        valueColor:
-                            AlwaysStoppedAnimation<Color>(CustomColors.white)),
-                    SizedBox(
-                      height: 35,
-                    ),
-                    Text(
-                      '$_phrase',
-                      style: TextStyle(
-                          fontSize: MediaQuery.of(context).size.width * (.06),
-                          color: CustomColors.white),
-                    ),
-                  ],
+    return CheckConnection(
+      child: Scaffold(
+        backgroundColor: CustomColors.red,
+        body: Stack(
+          fit: StackFit.expand,
+          children: <Widget>[
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                Expanded(
+                  flex: 7,
+                  child: Container(
+                      child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Image.asset(
+                        'assets/app_logo.png',
+                        height: MediaQuery.of(context).size.height * (0.75),
+                        width: MediaQuery.of(context).size.width * (0.75),
+                      ),
+                    ],
+                  )),
                 ),
-              )
-            ],
-          ),
-        ],
+                Expanded(
+                  flex: 2,
+                  child: Column(
+                    children: <Widget>[
+                      CircularProgressIndicator(
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(CustomColors.white)),
+                      SizedBox(
+                        height: 35,
+                      ),
+                      Text(
+                        '$_phrase',
+                        style: TextStyle(
+                            fontSize: MediaQuery.of(context).size.width * (.06),
+                            color: CustomColors.white),
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -5,6 +5,7 @@ import 'package:flutter_search_bar/flutter_search_bar.dart';
 import 'package:knife_and_spoon/Assets/custom_colors.dart';
 import 'package:knife_and_spoon/Models/ricetta.dart';
 import 'package:knife_and_spoon/Models/utente.dart';
+import 'package:knife_and_spoon/Utils/check_connection.dart';
 import 'package:knife_and_spoon/Widgets/ricetta_button.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -94,21 +95,23 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
-    return SafeArea(
-        child: Scaffold(
-            appBar: searchBar.build(context),
-            body: SingleChildScrollView(
-              child: _isLoading
-                  ? buildText("Sto cercando...")
-                  : _foundRecepies.length != 0
-                      ? RicettaButton(
-                          utente: _actualUser,
-                          ricette: _foundRecepies,
-                        )
-                      : _hasSearched
-                          ? buildText("Nessun risultato")
-                          : buildText("Clicca sulla lente di ingrandimento"),
-            )));
+    return CheckConnection(
+      child: SafeArea(
+          child: Scaffold(
+              appBar: searchBar.build(context),
+              body: SingleChildScrollView(
+                child: _isLoading
+                    ? buildText("Sto cercando...")
+                    : _foundRecepies.length != 0
+                        ? RicettaButton(
+                            utente: _actualUser,
+                            ricette: _foundRecepies,
+                          )
+                        : _hasSearched
+                            ? buildText("Nessun risultato")
+                            : buildText("Clicca sulla lente di ingrandimento"),
+              ))),
+    );
   }
 
   Widget buildText(String s) {

@@ -35,8 +35,38 @@ Widget buildCustomAlertOKDialog(
   );
 }
 
+Widget buildConnectionAlertDialog(Function onPressed) {
+  return AlertDialog(
+    backgroundColor: CustomColors.white,
+    title: Text(
+      "Attenzione",
+      style: TextStyle(color: Colors.black),
+    ),
+    content: SingleChildScrollView(
+      child: ListBody(
+        children: <Widget>[
+          Text(
+            "Nessuna connesione internet.",
+            style: TextStyle(color: Colors.black),
+          ),
+        ],
+      ),
+    ),
+    actions: <Widget>[
+      TextButton(
+        child: Text(
+          'OK',
+          style: TextStyle(color: CustomColors.red),
+        ),
+        onPressed:onPressed,
+      ),
+    ],
+  );
+}
+
 Widget buildAnonymousDialogRegistration(
-    BuildContext context,) {
+  BuildContext context,
+) {
   return AlertDialog(
     backgroundColor: CustomColors.white,
     title: Text(
@@ -68,11 +98,10 @@ Widget buildAnonymousDialogRegistration(
           'Fammi registrare!',
           style: TextStyle(color: CustomColors.red),
         ),
-        onPressed: () async{
+        onPressed: () async {
           await Authentication.signOut(context: context);
           Navigator.of(context).pushAndRemoveUntil(
-              _routeToSignInScreen(),
-                  (Route<dynamic> route) => false);
+              _routeToSignInScreen(), (Route<dynamic> route) => false);
         },
       ),
     ],
@@ -87,8 +116,7 @@ Route _routeToSignInScreen() {
       var end = Offset.zero;
       var curve = Curves.ease;
 
-      var tween =
-      Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+      var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
 
       return SlideTransition(
         position: animation.drive(tween),

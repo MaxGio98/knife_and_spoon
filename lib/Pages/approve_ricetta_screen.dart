@@ -5,6 +5,7 @@ import 'package:knife_and_spoon/Assets/custom_colors.dart';
 import 'package:knife_and_spoon/Models/ricetta.dart';
 import 'package:knife_and_spoon/Models/utente.dart';
 import 'package:knife_and_spoon/Pages/ricetta_show_screen.dart';
+import 'package:knife_and_spoon/Utils/check_connection.dart';
 
 class ApproveRicettaScreen extends StatefulWidget {
   const ApproveRicettaScreen({Key key, @required Utente utente})
@@ -63,18 +64,20 @@ class _ApproveRicettaScreenState extends State<ApproveRicettaScreen> {
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
-    return SafeArea(
-        child: Scaffold(
-            appBar: AppBar(
-              title: Text("Approva le ricette"),
-            ),
-            body: SingleChildScrollView(
-              child: _isLoading
-                  ? buildText("Sto cercando...")
-                  : _foundRecepies.length != 0
-                      ? buildRicetteToApprove()
-                      : buildText("Nessuna ricetta da approvare"),
-            )));
+    return CheckConnection(
+      child: SafeArea(
+          child: Scaffold(
+              appBar: AppBar(
+                title: Text("Approva le ricette"),
+              ),
+              body: SingleChildScrollView(
+                child: _isLoading
+                    ? buildText("Sto cercando...")
+                    : _foundRecepies.length != 0
+                        ? buildRicetteToApprove()
+                        : buildText("Nessuna ricetta da approvare"),
+              ))),
+    );
   }
 
   Widget buildText(String s) {
