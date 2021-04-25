@@ -693,7 +693,7 @@ class _InsertRicettaScreenState extends State<InsertRicettaScreen>
                               textCapitalization: TextCapitalization.sentences,
                               controller: nameIngCList[i],
                               textAlign: TextAlign.center,
-                              maxLength: 25,
+                              maxLength: 35,
                               decoration: InputDecoration(
                                   hintText: "Nome ingrediente",
                                   counterText: ""),

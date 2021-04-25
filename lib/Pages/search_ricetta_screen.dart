@@ -47,9 +47,9 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-  void searchOnFirebase(String value) {
+  void searchOnFirebase(String value) async{
     _foundRecepies.clear();
-    FirebaseFirestore.instance
+    await FirebaseFirestore.instance
         .collection("Ricette")
         .where("isApproved", isEqualTo: true)
         .get()
@@ -76,6 +76,8 @@ class _SearchScreenState extends State<SearchScreen> {
           _foundRecepies.add(ricetta);
         }
       }
+    });
+    setState(() {
       _isLoading = false;
       _hasSearched = true;
     });
