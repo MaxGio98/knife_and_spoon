@@ -95,23 +95,21 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
-    return CheckConnection(
-      child: SafeArea(
-          child: Scaffold(
-              appBar: searchBar.build(context),
-              body: SingleChildScrollView(
-                child: _isLoading
-                    ? buildText("Sto cercando...")
-                    : _foundRecepies.length != 0
-                        ? RicettaButton(
-                            utente: _actualUser,
-                            ricette: _foundRecepies,
-                          )
-                        : _hasSearched
-                            ? buildText("Nessun risultato")
-                            : buildText("Clicca sulla lente di ingrandimento"),
-              ))),
-    );
+    return SafeArea(
+        child: Scaffold(
+            appBar: searchBar.build(context),
+            body: SingleChildScrollView(
+              child: _isLoading
+                  ? buildText("Sto cercando...")
+                  : _foundRecepies.length != 0
+                      ? RicettaButton(
+                          utente: _actualUser,
+                          ricette: _foundRecepies,
+                        )
+                      : _hasSearched
+                          ? buildText("Nessun risultato")
+                          : buildText("Clicca sulla lente di ingrandimento"),
+            )));
   }
 
   Widget buildText(String s) {

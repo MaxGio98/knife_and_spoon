@@ -43,52 +43,50 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     Authentication.initializeFirebase(context: context);
-    return CheckConnection(
-      child: Scaffold(
-        backgroundColor: CustomColors.red,
-        body: Stack(
-          fit: StackFit.expand,
-          children: <Widget>[
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Expanded(
-                  flex: 7,
-                  child: Container(
-                      child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Image.asset(
-                        'assets/app_logo.png',
-                        height: MediaQuery.of(context).size.height * (0.75),
-                        width: MediaQuery.of(context).size.width * (0.75),
-                      ),
-                    ],
-                  )),
+    return Scaffold(
+      backgroundColor: CustomColors.red,
+      body: Stack(
+        fit: StackFit.expand,
+        children: <Widget>[
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Expanded(
+                flex: 7,
+                child: Container(
+                    child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Image.asset(
+                      'assets/app_logo.png',
+                      height: MediaQuery.of(context).size.height * (0.75),
+                      width: MediaQuery.of(context).size.width * (0.75),
+                    ),
+                  ],
+                )),
+              ),
+              Expanded(
+                flex: 2,
+                child: Column(
+                  children: <Widget>[
+                    CircularProgressIndicator(
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(CustomColors.white)),
+                    SizedBox(
+                      height: 35,
+                    ),
+                    Text(
+                      '$_phrase',
+                      style: TextStyle(
+                          fontSize: MediaQuery.of(context).size.width * (.06),
+                          color: CustomColors.white),
+                    ),
+                  ],
                 ),
-                Expanded(
-                  flex: 2,
-                  child: Column(
-                    children: <Widget>[
-                      CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                              CustomColors.white)),
-                      SizedBox(
-                        height: 35,
-                      ),
-                      Text(
-                        '$_phrase',
-                        style: TextStyle(
-                            fontSize: MediaQuery.of(context).size.width * (.06),
-                            color: CustomColors.white),
-                      ),
-                    ],
-                  ),
-                )
-              ],
-            ),
-          ],
-        ),
+              )
+            ],
+          ),
+        ],
       ),
     );
   }

@@ -90,240 +90,237 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
-    return CheckConnection(
-      child: SafeArea(
-          child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          shadowColor: Colors.transparent,
-          iconTheme: IconThemeData(
-            color: CustomColors.red,
-          ),
+    return SafeArea(
+        child: Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        shadowColor: Colors.transparent,
+        iconTheme: IconThemeData(
+          color: CustomColors.red,
         ),
-        body: Stack(
-          children: [
-            Column(
-              children: [
-                Center(
-                  child: SizedBox(
-                    height: width * (0.7),
-                    width: width * (0.7),
-                    child: ClipRRect(
-                        borderRadius: BorderRadius.circular(width * (0.7)),
-                        child: !(_actualUser.immagine == "")
-                            ? Image.network(
-                                _actualUser.immagine,
-                                fit: BoxFit.cover,
-                                loadingBuilder: (BuildContext context,
-                                    Widget child,
-                                    ImageChunkEvent loadingProgress) {
-                                  if (loadingProgress == null) return child;
-                                  return Center(
-                                    child: CircularProgressIndicator(
-                                      value: loadingProgress
-                                                  .expectedTotalBytes !=
-                                              null
-                                          ? loadingProgress
-                                                  .cumulativeBytesLoaded /
-                                              loadingProgress.expectedTotalBytes
-                                          : null,
-                                      valueColor:
-                                          new AlwaysStoppedAnimation<Color>(
-                                              CustomColors.red),
-                                    ),
-                                  );
-                                },
-                              )
-                            : Image.asset(
-                                "assets/pizza.png",
-                                fit: BoxFit.cover,
-                              )),
-                  ),
+      ),
+      body: Stack(
+        children: [
+          Column(
+            children: [
+              Center(
+                child: SizedBox(
+                  height: width * (0.7),
+                  width: width * (0.7),
+                  child: ClipRRect(
+                      borderRadius: BorderRadius.circular(width * (0.7)),
+                      child: !(_actualUser.immagine == "")
+                          ? Image.network(
+                              _actualUser.immagine,
+                              fit: BoxFit.cover,
+                              loadingBuilder: (BuildContext context,
+                                  Widget child,
+                                  ImageChunkEvent loadingProgress) {
+                                if (loadingProgress == null) return child;
+                                return Center(
+                                  child: CircularProgressIndicator(
+                                    value: loadingProgress.expectedTotalBytes !=
+                                            null
+                                        ? loadingProgress
+                                                .cumulativeBytesLoaded /
+                                            loadingProgress.expectedTotalBytes
+                                        : null,
+                                    valueColor:
+                                        new AlwaysStoppedAnimation<Color>(
+                                            CustomColors.red),
+                                  ),
+                                );
+                              },
+                            )
+                          : Image.asset(
+                              "assets/pizza.png",
+                              fit: BoxFit.cover,
+                            )),
                 ),
-                !(_actualUser.immagine == "")
-                    ? Column(
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(top: height * 0.10),
-                            child: Center(
-                              child: SizedBox(
-                                width: width * (0.75),
-                                height: height * (0.075),
-                                child: OutlinedButton(
-                                  style: ButtonStyle(
-                                    backgroundColor: MaterialStateProperty.all(
-                                        CustomColors.red),
-                                    shape: MaterialStateProperty.all(
-                                      RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(40),
-                                      ),
+              ),
+              !(_actualUser.immagine == "")
+                  ? Column(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(top: height * 0.10),
+                          child: Center(
+                            child: SizedBox(
+                              width: width * (0.75),
+                              height: height * (0.075),
+                              child: OutlinedButton(
+                                style: ButtonStyle(
+                                  backgroundColor: MaterialStateProperty.all(
+                                      CustomColors.red),
+                                  shape: MaterialStateProperty.all(
+                                    RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(40),
                                     ),
                                   ),
-                                  onPressed: () async {
+                                ),
+                                onPressed: () async {
+                                  EasyPermissionValidator
+                                      permissionValidatorStorage =
+                                      EasyPermissionValidator(
+                                    appName: "",
+                                    context: context,
+                                    customDialog:
+                                        buildWarningPermissions(context),
+                                  );
+                                  var resultStorage =
+                                      await permissionValidatorStorage
+                                          .storage();
+                                  if (resultStorage) {
                                     EasyPermissionValidator
-                                        permissionValidatorStorage =
+                                        permissionValidatorCamera =
                                         EasyPermissionValidator(
                                       appName: "",
                                       context: context,
                                       customDialog:
                                           buildWarningPermissions(context),
                                     );
-                                    var resultStorage =
-                                        await permissionValidatorStorage
-                                            .storage();
-                                    if (resultStorage) {
-                                      EasyPermissionValidator
-                                          permissionValidatorCamera =
-                                          EasyPermissionValidator(
-                                        appName: "",
-                                        context: context,
-                                        customDialog:
-                                            buildWarningPermissions(context),
-                                      );
-                                      var resultCamera =
-                                          await permissionValidatorCamera
-                                              .camera();
-                                      if (resultCamera) {
-                                        _showPicker(context);
-                                      }
+                                    var resultCamera =
+                                        await permissionValidatorCamera
+                                            .camera();
+                                    if (resultCamera) {
+                                      _showPicker(context);
                                     }
-                                  },
-                                  child: Text(
-                                    'Cambia immagine profilo',
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w600,
-                                    ),
+                                  }
+                                },
+                                child: Text(
+                                  'Cambia immagine profilo',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600,
                                   ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(top: height * 0.015),
-                            child: Center(
-                              child: SizedBox(
-                                width: width * (0.75),
-                                height: height * (0.075),
-                                child: OutlinedButton(
-                                  style: ButtonStyle(
-                                    backgroundColor: MaterialStateProperty.all(
-                                        CustomColors.red),
-                                    shape: MaterialStateProperty.all(
-                                      RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(40),
-                                      ),
-                                    ),
-                                  ),
-                                  onPressed: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (BuildContext context) =>
-                                                ChangeUsernameScreen(
-                                                  utente: _actualUser,
-                                                )));
-                                  },
-                                  child: Text(
-                                    'Cambia username',
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      )
-                    : SizedBox(),
-                _actualUser.isAdmin
-                    ? Padding(
-                        padding: EdgeInsets.only(top: height * 0.015),
-                        child: Center(
-                          child: SizedBox(
-                            width: width * (0.75),
-                            height: height * (0.075),
-                            child: OutlinedButton(
-                              style: ButtonStyle(
-                                backgroundColor:
-                                    MaterialStateProperty.all(CustomColors.red),
-                                shape: MaterialStateProperty.all(
-                                  RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(40),
-                                  ),
-                                ),
-                              ),
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (BuildContext context) =>
-                                            ApproveRicettaScreen(
-                                              utente: _actualUser,
-                                            )));
-                              },
-                              child: Text(
-                                'Approva le ricette',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
                             ),
                           ),
                         ),
-                      )
-                    : SizedBox(),
-              ],
-            ),
-            Padding(
-              padding: EdgeInsets.only(bottom: height * (0.01)),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Center(
-                    child: SizedBox(
-                      width: width * (0.75),
-                      height: height * (0.075),
-                      child: OutlinedButton(
-                        style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStateProperty.all(CustomColors.red),
-                          shape: MaterialStateProperty.all(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(40),
+                        Padding(
+                          padding: EdgeInsets.only(top: height * 0.015),
+                          child: Center(
+                            child: SizedBox(
+                              width: width * (0.75),
+                              height: height * (0.075),
+                              child: OutlinedButton(
+                                style: ButtonStyle(
+                                  backgroundColor: MaterialStateProperty.all(
+                                      CustomColors.red),
+                                  shape: MaterialStateProperty.all(
+                                    RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(40),
+                                    ),
+                                  ),
+                                ),
+                                onPressed: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (BuildContext context) =>
+                                              ChangeUsernameScreen(
+                                                utente: _actualUser,
+                                              )));
+                                },
+                                child: Text(
+                                  'Cambia username',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
                         ),
-                        onPressed: () async {
-                          await Authentication.signOut(context: context);
-                          Navigator.of(context).pushAndRemoveUntil(
-                              _routeToSignInScreen(),
-                              (Route<dynamic> route) => false);
-                        },
-                        child: Text(
-                          'Log out',
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
+                      ],
+                    )
+                  : SizedBox(),
+              _actualUser.isAdmin
+                  ? Padding(
+                      padding: EdgeInsets.only(top: height * 0.015),
+                      child: Center(
+                        child: SizedBox(
+                          width: width * (0.75),
+                          height: height * (0.075),
+                          child: OutlinedButton(
+                            style: ButtonStyle(
+                              backgroundColor:
+                                  MaterialStateProperty.all(CustomColors.red),
+                              shape: MaterialStateProperty.all(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(40),
+                                ),
+                              ),
+                            ),
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (BuildContext context) =>
+                                          ApproveRicettaScreen(
+                                            utente: _actualUser,
+                                          )));
+                            },
+                            child: Text(
+                              'Approva le ricette',
+                              style: TextStyle(
+                                fontSize: 20,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                           ),
+                        ),
+                      ),
+                    )
+                  : SizedBox(),
+            ],
+          ),
+          Padding(
+            padding: EdgeInsets.only(bottom: height * (0.01)),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Center(
+                  child: SizedBox(
+                    width: width * (0.75),
+                    height: height * (0.075),
+                    child: OutlinedButton(
+                      style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all(CustomColors.red),
+                        shape: MaterialStateProperty.all(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(40),
+                          ),
+                        ),
+                      ),
+                      onPressed: () async {
+                        await Authentication.signOut(context: context);
+                        Navigator.of(context).pushAndRemoveUntil(
+                            _routeToSignInScreen(),
+                            (Route<dynamic> route) => false);
+                      },
+                      child: Text(
+                        'Log out',
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
-      )),
-    );
+          ),
+        ],
+      ),
+    ));
   }
 
   Route _routeToSignInScreen() {

@@ -62,26 +62,24 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return CheckConnection(
-      child: SafeArea(
-        child: Scaffold(
-            appBar: AppBar(
-              title: Text("I tuoi preferiti"),
-            ),
-            body: _actualUser.preferiti.length == 0
-                ? buildText("Non hai preferiti. Aggiungine qualcuno!")
-                : _loadedRicette
-                    ? SingleChildScrollView(
-                        child: RicettaButton(
-                          utente: _actualUser,
-                          ricette: ricetteFav,
-                          onCase: () {
-                            loadFavFromFirebase();
-                          },
-                        ),
-                      )
-                    : buildText("Caricamento in corso...")),
-      ),
+    return SafeArea(
+      child: Scaffold(
+          appBar: AppBar(
+            title: Text("I tuoi preferiti"),
+          ),
+          body: _actualUser.preferiti.length == 0
+              ? buildText("Non hai preferiti. Aggiungine qualcuno!")
+              : _loadedRicette
+                  ? SingleChildScrollView(
+                      child: RicettaButton(
+                        utente: _actualUser,
+                        ricette: ricetteFav,
+                        onCase: () {
+                          loadFavFromFirebase();
+                        },
+                      ),
+                    )
+                  : buildText("Caricamento in corso...")),
     );
   }
 

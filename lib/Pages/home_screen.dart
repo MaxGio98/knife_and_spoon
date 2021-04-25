@@ -210,6 +210,7 @@ class _HomeScreenState extends State<HomeScreen>
         child: Scaffold(
           backgroundColor: Colors.white,
           floatingActionButton: SpeedDial(
+            heroTag: "btnMenu",
             marginEnd: width * (0.0275),
             marginBottom: width * (0.0275),
             icon: Icons.menu,
@@ -497,120 +498,161 @@ class _HomeScreenState extends State<HomeScreen>
                                   );
                                 })),
                       ),
-                      CarouselSlider(
-                        options: CarouselOptions(
-                          height: height * (.3),
-                          autoPlay: true,
-                          autoPlayInterval: Duration(seconds: 10),
-                          autoPlayAnimationDuration:
-                              Duration(milliseconds: 800),
-                          autoPlayCurve: Curves.fastOutSlowIn,
-                          pauseAutoPlayOnTouch: true,
-                          aspectRatio: 2.0,
-                          onPageChanged: (index, reason) {
-                            setState(() {
-                              _currentIndex = index;
-                            });
-                          },
-                        ),
-                        items: _tenRicette.map((card) {
-                          return Builder(builder: (BuildContext context) {
-                            return Padding(
-                              padding: EdgeInsets.all(width * .01),
-                              child: Container(
-                                height: height * (0.30),
-                                width: width,
-                                child: InkWell(
-                                  onTap: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (BuildContext context) =>
-                                                RicettaShow(
-                                                  utente: _actualUser,
-                                                  ricetta: card,
-                                                )));
+                      _tenRicette.length != 0
+                          ? Container(
+                              height: height * (.3),
+                              width: width,
+                              child: CarouselSlider(
+                                options: CarouselOptions(
+                                  height: height * (.3),
+                                  autoPlay: true,
+                                  autoPlayInterval: Duration(seconds: 10),
+                                  autoPlayAnimationDuration:
+                                      Duration(milliseconds: 800),
+                                  autoPlayCurve: Curves.fastOutSlowIn,
+                                  pauseAutoPlayOnTouch: true,
+                                  aspectRatio: 2.0,
+                                  onPageChanged: (index, reason) {
+                                    setState(() {
+                                      _currentIndex = index;
+                                    });
                                   },
-                                  child: Stack(
-                                    fit: StackFit.expand,
-                                    children: [
-                                      ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(8.0),
-                                        child: Image.network(
-                                          card.thumbnail,
-                                          fit: BoxFit.cover,
-                                          loadingBuilder: (BuildContext context,
-                                              Widget child,
-                                              ImageChunkEvent loadingProgress) {
-                                            if (loadingProgress == null)
-                                              return child;
-                                            return Center(
-                                              child: CircularProgressIndicator(
-                                                value: loadingProgress
-                                                            .expectedTotalBytes !=
-                                                        null
-                                                    ? loadingProgress
-                                                            .cumulativeBytesLoaded /
-                                                        loadingProgress
-                                                            .expectedTotalBytes
-                                                    : null,
-                                                valueColor:
-                                                    new AlwaysStoppedAnimation<
-                                                            Color>(
-                                                        CustomColors.red),
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                      ),
-                                      Container(
-                                        height: width * 0.1,
+                                ),
+                                items: _tenRicette.map((card) {
+                                  return Builder(
+                                      builder: (BuildContext context) {
+                                    return Padding(
+                                      padding: EdgeInsets.all(width * .01),
+                                      child: Container(
+                                        height: height * (0.30),
                                         width: width,
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                          gradient: LinearGradient(
-                                            begin: Alignment(0, -1),
-                                            end: Alignment(0, 0.5),
-                                            colors: [
-                                              const Color(0xCC000000)
-                                                  .withOpacity(0.1),
-                                              const Color(0x00000000),
-                                              const Color(0x00000000),
-                                              const Color(0xCC000000)
-                                                  .withOpacity(0.6),
+                                        child: InkWell(
+                                          onTap: () {
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (BuildContext
+                                                            context) =>
+                                                        RicettaShow(
+                                                          utente: _actualUser,
+                                                          ricetta: card,
+                                                        )));
+                                          },
+                                          child: Stack(
+                                            fit: StackFit.expand,
+                                            children: [
+                                              ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(8.0),
+                                                child: Image.network(
+                                                  card.thumbnail,
+                                                  fit: BoxFit.cover,
+                                                  loadingBuilder:
+                                                      (BuildContext context,
+                                                          Widget child,
+                                                          ImageChunkEvent
+                                                              loadingProgress) {
+                                                    if (loadingProgress == null)
+                                                      return child;
+                                                    return Center(
+                                                      child:
+                                                          CircularProgressIndicator(
+                                                        value: loadingProgress
+                                                                    .expectedTotalBytes !=
+                                                                null
+                                                            ? loadingProgress
+                                                                    .cumulativeBytesLoaded /
+                                                                loadingProgress
+                                                                    .expectedTotalBytes
+                                                            : null,
+                                                        valueColor:
+                                                            new AlwaysStoppedAnimation<
+                                                                    Color>(
+                                                                CustomColors
+                                                                    .red),
+                                                      ),
+                                                    );
+                                                  },
+                                                ),
+                                              ),
+                                              Container(
+                                                height: width * 0.1,
+                                                width: width,
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                  gradient: LinearGradient(
+                                                    begin: Alignment(0, -1),
+                                                    end: Alignment(0, 0.5),
+                                                    colors: [
+                                                      const Color(0xCC000000)
+                                                          .withOpacity(0.1),
+                                                      const Color(0x00000000),
+                                                      const Color(0x00000000),
+                                                      const Color(0xCC000000)
+                                                          .withOpacity(0.6),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                              Row(
+                                                children: [
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            12.0),
+                                                    child: Align(
+                                                        alignment: Alignment
+                                                            .bottomLeft,
+                                                        child: FittedBox(
+                                                            fit: BoxFit.contain,
+                                                            child: Text(
+                                                              card.title,
+                                                              style: TextStyle(
+                                                                  fontSize:
+                                                                      width *
+                                                                          (.05),
+                                                                  color:
+                                                                      CustomColors
+                                                                          .white),
+                                                            ))),
+                                                  ),
+                                                ],
+                                              )
                                             ],
                                           ),
                                         ),
                                       ),
-                                      Row(
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.all(12.0),
-                                            child: Align(
-                                                alignment: Alignment.bottomLeft,
-                                                child: FittedBox(
-                                                    fit: BoxFit.contain,
-                                                    child: Text(
-                                                      card.title,
-                                                      style: TextStyle(
-                                                          fontSize:
-                                                              width * (.05),
-                                                          color: CustomColors
-                                                              .white),
-                                                    ))),
-                                          ),
-                                        ],
-                                      )
-                                    ],
-                                  ),
-                                ),
+                                    );
+                                  });
+                                }).toList(),
                               ),
-                            );
-                          });
-                        }).toList(),
-                      ),
+                            )
+                          : Container(
+                              height: height * (.3),
+                              width: width,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "Caricamento in corso...",
+                                    style: TextStyle(fontSize: width * (.05)),
+                                  ),
+                                  Padding(
+                                    padding:
+                                        EdgeInsets.only(top: height * (.01)),
+                                    child: Container(
+                                      width: width * (.1),
+                                      height: width * (.1),
+                                      child: CircularProgressIndicator(
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                                  CustomColors.red)),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: map<Widget>(_tenRicette, (index, url) {
@@ -700,8 +742,14 @@ class _HomeScreenState extends State<HomeScreen>
       return Container(
         width: MediaQuery.of(context).size.width * (.2),
         height: MediaQuery.of(context).size.width * (.2),
-        child: CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(CustomColors.red)),
+        child: Center(
+          child: Container(
+            width: MediaQuery.of(context).size.width * (.1),
+            height: MediaQuery.of(context).size.width * (.1),
+            child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(CustomColors.red)),
+          ),
+        ),
       );
     }
   }

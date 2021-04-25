@@ -65,25 +65,23 @@ class _ApproveRicettaScreenState extends State<ApproveRicettaScreen> {
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
-    return CheckConnection(
-      child: SafeArea(
-          child: Scaffold(
-              appBar: AppBar(
-                title: Text("Approva le ricette"),
-              ),
-              body: SingleChildScrollView(
-                child: _isLoading
-                    ? buildText("Sto cercando...")
-                    : _foundRecepies.length != 0
-                        ? RicettaButton(
-                            utente: _actualUser,
-                            ricette: _foundRecepies,
-                            onCase: () {
-                              searchOnFirebase();
-                            })
-                        : buildText("Nessuna ricetta da approvare"),
-              ))),
-    );
+    return SafeArea(
+        child: Scaffold(
+            appBar: AppBar(
+              title: Text("Approva le ricette"),
+            ),
+            body: SingleChildScrollView(
+              child: _isLoading
+                  ? buildText("Sto cercando...")
+                  : _foundRecepies.length != 0
+                      ? RicettaButton(
+                          utente: _actualUser,
+                          ricette: _foundRecepies,
+                          onCase: () {
+                            searchOnFirebase();
+                          })
+                      : buildText("Nessuna ricetta da approvare"),
+            )));
   }
 
   Widget buildText(String s) {
