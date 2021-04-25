@@ -324,314 +324,344 @@ class _InsertRicettaScreenState extends State<InsertRicettaScreen>
     );
   }
 
+  Future<bool> _onWillPop() async {
+    if(imgInserted||titleController.text.trim().isNotEmpty||timeController.text.isNotEmpty||peopleController.text.isNotEmpty||qtIngCList.length!=0||passaggiCtList.length!=0)
+      {
+        return (await showDialog(
+          context: context,
+          builder: (context) => new AlertDialog(
+            content: new Text('Sei sicuro di voler uscire?'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: new Text('No'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: new Text('Si'),
+              ),
+            ],
+          ),
+        )) ?? false;
+      }
+    else
+      {
+        return true;
+      }
+
+  }
+
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
     return SafeArea(
-        child: Scaffold(
-            floatingActionButton: FadeTransition(
-              opacity: _hideFabAnimController,
-              child: ScaleTransition(
-                scale: _hideFabAnimController,
-                child: FloatingActionButton.extended(
-                  heroTag: "btnPublishRicetta",
-                  onPressed: () {
-                    checkFields();
-                  },
-                  label: Text("Pubblica"),
-                  icon: Icon(Icons.edit),
+        child: WillPopScope(
+          onWillPop: _onWillPop,
+          child: Scaffold(
+              floatingActionButton: FadeTransition(
+                opacity: _hideFabAnimController,
+                child: ScaleTransition(
+                  scale: _hideFabAnimController,
+                  child: FloatingActionButton.extended(
+                    heroTag: "btnPublishRicetta",
+                    onPressed: () {
+                      checkFields();
+                    },
+                    label: Text("Pubblica"),
+                    icon: Icon(Icons.edit),
+                  ),
                 ),
               ),
-            ),
-            body: NestedScrollView(
-              controller: _scrollController,
-              headerSliverBuilder:
-                  (BuildContext context, bool innerBoxIsScrolled) {
-                return <Widget>[
-                  SliverAppBar(
-                    expandedHeight: height * (0.3),
-                    floating: false,
-                    pinned: true,
-                    backgroundColor: CustomColors.red,
-                    flexibleSpace: FlexibleSpaceBar(
-                        centerTitle: false,
-                        title: Text(titleController.text.toString(),
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: width * .05,
-                            )),
-                        background: Stack(
-                          fit: StackFit.expand,
-                          children: [
-                            imgInserted
-                                ? Image.file(
-                                    f,
-                                    fit: BoxFit.cover,
-                                  )
-                                : Image.asset(
-                                    "assets/pizza.png",
-                                    fit: BoxFit.cover,
+              body: NestedScrollView(
+                controller: _scrollController,
+                headerSliverBuilder:
+                    (BuildContext context, bool innerBoxIsScrolled) {
+                  return <Widget>[
+                    SliverAppBar(
+                      expandedHeight: height * (0.3),
+                      floating: false,
+                      pinned: true,
+                      backgroundColor: CustomColors.red,
+                      flexibleSpace: FlexibleSpaceBar(
+                          centerTitle: false,
+                          title: Text(titleController.text.toString(),
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: width * .05,
+                              )),
+                          background: Stack(
+                            fit: StackFit.expand,
+                            children: [
+                              imgInserted
+                                  ? Image.file(
+                                      f,
+                                      fit: BoxFit.cover,
+                                    )
+                                  : Image.asset(
+                                      "assets/pizza.png",
+                                      fit: BoxFit.cover,
+                                    ),
+                              Container(
+                                height: width * 0.1,
+                                width: width,
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment(0, -1),
+                                    end: Alignment(0, 0.5),
+                                    colors: [
+                                      const Color(0xCC000000).withOpacity(0.6),
+                                      const Color(0x00000000),
+                                      const Color(0x00000000),
+                                      const Color(0xCC000000).withOpacity(0.6),
+                                    ],
                                   ),
-                            Container(
-                              height: width * 0.1,
-                              width: width,
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment(0, -1),
-                                  end: Alignment(0, 0.5),
-                                  colors: [
-                                    const Color(0xCC000000).withOpacity(0.6),
-                                    const Color(0x00000000),
-                                    const Color(0x00000000),
-                                    const Color(0xCC000000).withOpacity(0.6),
-                                  ],
+                                ),
+                              ),
+                            ],
+                          )),
+                    ),
+                  ];
+                },
+                body: ListView(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.all(width * (0.04)),
+                      child: Column(children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                                child: Padding(
+                              padding: EdgeInsets.only(right: width * (0.05)),
+                              child: TextField(
+                                textCapitalization: TextCapitalization.sentences,
+                                controller: titleController,
+                                maxLength: 30,
+                                decoration: InputDecoration(
+                                    hintText: "Inserisci il titolo della ricetta",
+                                    counterText: ""),
+                              ),
+                            )),
+                            FloatingActionButton(
+                              heroTag: "btnAddImg",
+                              onPressed: () async {
+                                EasyPermissionValidator
+                                    permissionValidatorStorage =
+                                    EasyPermissionValidator(
+                                  appName: "",
+                                  context: context,
+                                  customDialog: buildWarningPermissions(context),
+                                );
+                                var resultStorage =
+                                    await permissionValidatorStorage.storage();
+                                if (resultStorage) {
+                                  EasyPermissionValidator
+                                      permissionValidatorCamera =
+                                      EasyPermissionValidator(
+                                    appName: "",
+                                    context: context,
+                                    customDialog:
+                                        buildWarningPermissions(context),
+                                  );
+                                  var resultCamera =
+                                      await permissionValidatorCamera.camera();
+                                  if (resultCamera) {
+                                    _showPicker(context);
+                                  }
+                                }
+                              },
+                              child: Icon(Icons.camera_alt_outlined),
+                            )
+                          ],
+                        ),
+                        Padding(
+                            padding: EdgeInsets.only(top: height * (0.015)),
+                            child: Row(children: [
+                              SvgPicture.asset(
+                                "assets/clock.svg",
+                                height: width * (0.125),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(left: width * (0.05)),
+                                child: Container(
+                                  width: width * 0.31,
+                                  child: TextField(
+                                    controller: timeController,
+                                    keyboardType: TextInputType.number,
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.allow(
+                                          RegExp("[0-9]"))
+                                    ],
+                                    textAlign: TextAlign.center,
+                                    maxLength: 4,
+                                    decoration: InputDecoration(
+                                        hintText: "Tempo in minuti",
+                                        counterText: ""),
+                                  ),
+                                ),
+                              ),
+                            ])),
+                        Padding(
+                            padding: EdgeInsets.only(top: height * (0.015)),
+                            child: Row(children: [
+                              SvgPicture.asset(
+                                "assets/group.svg",
+                                height: width * (0.125),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(left: width * (0.05)),
+                                child: Container(
+                                  width: width * 0.31,
+                                  child: TextField(
+                                    controller: peopleController,
+                                    keyboardType: TextInputType.number,
+                                    textAlign: TextAlign.center,
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.allow(
+                                          RegExp("[0-9]"))
+                                    ],
+                                    maxLength: 2,
+                                    decoration: InputDecoration(
+                                        hintText: "Numero persone",
+                                        counterText: ""),
+                                  ),
+                                ),
+                              ),
+                            ])),
+                        Padding(
+                            padding: EdgeInsets.only(top: height * (0.015)),
+                            child: Row(children: [
+                              Text(
+                                "Categoria",
+                                style: TextStyle(fontSize: width * (0.05)),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(left: width * (0.05)),
+                                child: DropdownButton<String>(
+                                  focusColor: CustomColors.red,
+                                  value: dropdownCat,
+                                  iconSize: 0,
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: width * (0.05)),
+                                  underline: Container(
+                                    height: 2,
+                                    color: CustomColors.silver,
+                                  ),
+                                  onChanged: (String newValue) {
+                                    setState(() {
+                                      dropdownCat = newValue;
+                                    });
+                                  },
+                                  items: <String>[
+                                    'Antipasto',
+                                    'Primo',
+                                    'Secondo',
+                                    'Contorno',
+                                    'Dolce'
+                                  ].map<DropdownMenuItem<String>>((String value) {
+                                    return DropdownMenuItem<String>(
+                                      value: value,
+                                      child: Text(value),
+                                    );
+                                  }).toList(),
+                                ),
+                              ),
+                            ])),
+                        ListView.builder(
+                            itemCount: qtIngCList.length,
+                            physics: NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemBuilder: (context, i) {
+                              //return RowIngrediente();
+                              return buildRowIngrediente(i);
+                            }),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(top: height * 0.015),
+                              child: Center(
+                                child: SizedBox(
+                                  width: width * (0.75),
+                                  height: height * (0.075),
+                                  child: OutlinedButton(
+                                    style: ButtonStyle(
+                                      backgroundColor: MaterialStateProperty.all(
+                                          CustomColors.red),
+                                      shape: MaterialStateProperty.all(
+                                        RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(40),
+                                        ),
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      _addNewIngrediente();
+                                    },
+                                    child: Text(
+                                      'Inserisci un ingrediente',
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
                           ],
-                        )),
-                  ),
-                ];
-              },
-              body: ListView(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.all(width * (0.04)),
-                    child: Column(children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                              child: Padding(
-                            padding: EdgeInsets.only(right: width * (0.05)),
-                            child: TextField(
-                              textCapitalization: TextCapitalization.sentences,
-                              controller: titleController,
-                              maxLength: 30,
-                              decoration: InputDecoration(
-                                  hintText: "Inserisci il titolo della ricetta",
-                                  counterText: ""),
-                            ),
-                          )),
-                          FloatingActionButton(
-                            heroTag: "btnAddImg",
-                            onPressed: () async {
-                              EasyPermissionValidator
-                                  permissionValidatorStorage =
-                                  EasyPermissionValidator(
-                                appName: "",
-                                context: context,
-                                customDialog: buildWarningPermissions(context),
-                              );
-                              var resultStorage =
-                                  await permissionValidatorStorage.storage();
-                              if (resultStorage) {
-                                EasyPermissionValidator
-                                    permissionValidatorCamera =
-                                    EasyPermissionValidator(
-                                  appName: "",
-                                  context: context,
-                                  customDialog:
-                                      buildWarningPermissions(context),
-                                );
-                                var resultCamera =
-                                    await permissionValidatorCamera.camera();
-                                if (resultCamera) {
-                                  _showPicker(context);
-                                }
-                              }
-                            },
-                            child: Icon(Icons.camera_alt_outlined),
-                          )
-                        ],
-                      ),
-                      Padding(
-                          padding: EdgeInsets.only(top: height * (0.015)),
-                          child: Row(children: [
-                            SvgPicture.asset(
-                              "assets/clock.svg",
-                              height: width * (0.125),
-                            ),
+                        ),
+                        ListView.builder(
+                            itemCount: passaggiCtList.length,
+                            physics: NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemBuilder: (context, i) {
+                              return buildRowPassaggio(i);
+                            }),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
                             Padding(
-                              padding: EdgeInsets.only(left: width * (0.05)),
-                              child: Container(
-                                width: width * 0.31,
-                                child: TextField(
-                                  controller: timeController,
-                                  keyboardType: TextInputType.number,
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.allow(
-                                        RegExp("[0-9]"))
-                                  ],
-                                  textAlign: TextAlign.center,
-                                  maxLength: 4,
-                                  decoration: InputDecoration(
-                                      hintText: "Tempo in minuti",
-                                      counterText: ""),
-                                ),
-                              ),
-                            ),
-                          ])),
-                      Padding(
-                          padding: EdgeInsets.only(top: height * (0.015)),
-                          child: Row(children: [
-                            SvgPicture.asset(
-                              "assets/group.svg",
-                              height: width * (0.125),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(left: width * (0.05)),
-                              child: Container(
-                                width: width * 0.31,
-                                child: TextField(
-                                  controller: peopleController,
-                                  keyboardType: TextInputType.number,
-                                  textAlign: TextAlign.center,
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.allow(
-                                        RegExp("[0-9]"))
-                                  ],
-                                  maxLength: 2,
-                                  decoration: InputDecoration(
-                                      hintText: "Numero persone",
-                                      counterText: ""),
-                                ),
-                              ),
-                            ),
-                          ])),
-                      Padding(
-                          padding: EdgeInsets.only(top: height * (0.015)),
-                          child: Row(children: [
-                            Text(
-                              "Categoria",
-                              style: TextStyle(fontSize: width * (0.05)),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(left: width * (0.05)),
-                              child: DropdownButton<String>(
-                                focusColor: CustomColors.red,
-                                value: dropdownCat,
-                                iconSize: 0,
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: width * (0.05)),
-                                underline: Container(
-                                  height: 2,
-                                  color: CustomColors.silver,
-                                ),
-                                onChanged: (String newValue) {
-                                  setState(() {
-                                    dropdownCat = newValue;
-                                  });
-                                },
-                                items: <String>[
-                                  'Antipasto',
-                                  'Primo',
-                                  'Secondo',
-                                  'Contorno',
-                                  'Dolce'
-                                ].map<DropdownMenuItem<String>>((String value) {
-                                  return DropdownMenuItem<String>(
-                                    value: value,
-                                    child: Text(value),
-                                  );
-                                }).toList(),
-                              ),
-                            ),
-                          ])),
-                      ListView.builder(
-                          itemCount: qtIngCList.length,
-                          physics: NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemBuilder: (context, i) {
-                            //return RowIngrediente();
-                            return buildRowIngrediente(i);
-                          }),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(top: height * 0.015),
-                            child: Center(
-                              child: SizedBox(
-                                width: width * (0.75),
-                                height: height * (0.075),
-                                child: OutlinedButton(
-                                  style: ButtonStyle(
-                                    backgroundColor: MaterialStateProperty.all(
-                                        CustomColors.red),
-                                    shape: MaterialStateProperty.all(
-                                      RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(40),
+                              padding: EdgeInsets.only(top: height * 0.025),
+                              child: Center(
+                                child: SizedBox(
+                                  width: width * (0.75),
+                                  height: height * (0.075),
+                                  child: OutlinedButton(
+                                    style: ButtonStyle(
+                                      backgroundColor: MaterialStateProperty.all(
+                                          CustomColors.red),
+                                      shape: MaterialStateProperty.all(
+                                        RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(40),
+                                        ),
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      _addNewPassaggio();
+                                    },
+                                    child: Text(
+                                      'Inserisci un passaggio',
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w600,
                                       ),
                                     ),
                                   ),
-                                  onPressed: () {
-                                    _addNewIngrediente();
-                                  },
-                                  child: Text(
-                                    'Inserisci un ingrediente',
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                      ListView.builder(
-                          itemCount: passaggiCtList.length,
-                          physics: NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemBuilder: (context, i) {
-                            return buildRowPassaggio(i);
-                          }),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(top: height * 0.025),
-                            child: Center(
-                              child: SizedBox(
-                                width: width * (0.75),
-                                height: height * (0.075),
-                                child: OutlinedButton(
-                                  style: ButtonStyle(
-                                    backgroundColor: MaterialStateProperty.all(
-                                        CustomColors.red),
-                                    shape: MaterialStateProperty.all(
-                                      RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(40),
-                                      ),
-                                    ),
-                                  ),
-                                  onPressed: () {
-                                    _addNewPassaggio();
-                                  },
-                                  child: Text(
-                                    'Inserisci un passaggio',
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      )
-                    ]),
-                  )
-                ],
-              ),
-            )));
+                          ],
+                        )
+                      ]),
+                    )
+                  ],
+                ),
+              )),
+        ));
   }
 
   Widget buildRowIngrediente(int i) {
